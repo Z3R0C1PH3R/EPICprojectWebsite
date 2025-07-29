@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Calendar, MapPin, Download, FileText } from 'lucide-react';
+import { ArrowLeft, Calendar, MapPin, Download } from 'lucide-react';
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
@@ -165,46 +165,34 @@ export default function CaseStudyDetail() {
             )}
 
             {/* Study Details */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-              <div className="bg-white border border-gray-200 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Study Information</h3>
-                <div className="space-y-3">
-                  <div>
-                    <span className="text-sm font-medium text-gray-500">Case Study Number:</span>
-                    <p className="text-gray-900">#{caseStudy.case_study_number}</p>
-                  </div>
-                  {caseStudy.category && (
-                    <div>
-                      <span className="text-sm font-medium text-gray-500">Category:</span>
-                      <p className="text-gray-900">{caseStudy.category}</p>
-                    </div>
-                  )}
-                  {caseStudy.date && (
-                    <div>
-                      <span className="text-sm font-medium text-gray-500">Study Date:</span>
-                      <p className="text-gray-900">{caseStudy.date}</p>
-                    </div>
-                  )}
-                  {caseStudy.location && (
-                    <div>
-                      <span className="text-sm font-medium text-gray-500">Location:</span>
-                      <p className="text-gray-900">{caseStudy.location}</p>
-                    </div>
-                  )}
+            <div className="bg-white border border-gray-200 rounded-lg p-6 mb-12">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Study Information</h3>
+              <div className="space-y-3">
+                <div>
+                  <span className="text-sm font-medium text-gray-500">Case Study Number:</span>
+                  <p className="text-gray-900">#{caseStudy.case_study_number}</p>
                 </div>
-              </div>
-
-              <div className="bg-white border border-gray-200 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Related Resources</h3>
-                <div className="space-y-3">
-                  <a
-                    href="/case-studies"
-                    className="flex items-center text-blue-600 hover:text-blue-800"
-                  >
-                    <FileText className="h-4 w-4 mr-2" />
-                    View All Case Studies
-                  </a>
-                  {caseStudy.pdf_file && (
+                {caseStudy.category && (
+                  <div>
+                    <span className="text-sm font-medium text-gray-500">Category:</span>
+                    <p className="text-gray-900">{caseStudy.category}</p>
+                  </div>
+                )}
+                {caseStudy.date && (
+                  <div>
+                    <span className="text-sm font-medium text-gray-500">Study Date:</span>
+                    <p className="text-gray-900">{caseStudy.date}</p>
+                  </div>
+                )}
+                {caseStudy.location && (
+                  <div>
+                    <span className="text-sm font-medium text-gray-500">Location:</span>
+                    <p className="text-gray-900">{caseStudy.location}</p>
+                  </div>
+                )}
+                {caseStudy.pdf_file && (
+                  <div>
+                    <span className="text-sm font-medium text-gray-500">Download:</span>
                     <a
                       href={`${backend_url}${caseStudy.pdf_file}`}
                       target="_blank"
@@ -212,10 +200,10 @@ export default function CaseStudyDetail() {
                       className="flex items-center text-blue-600 hover:text-blue-800"
                     >
                       <Download className="h-4 w-4 mr-2" />
-                      Download Full Report
+                      Full Report (PDF)
                     </a>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             </div>
           </motion.div>

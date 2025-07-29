@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Plus, Edit, Trash2, ExternalLink } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { compressImage } from '../../utils/imageCompression';
+import { ImagePreview } from '../../components/ImagePreview';
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
@@ -54,14 +55,34 @@ export default function GalleryAdmin() {
     }
   };
 
-  const handlePhotosSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handlePhotosSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const newPhotos = Array.from(e.target.files);
-      const compressedPhotos = await Promise.all(
-        newPhotos.map(photo => compressImage(photo, photoQuality))
+      setPhotos(newPhotos);
+      
+      // Initialize captions array for new photos
+      const newCaptions = [...photoCaptions];
+      while (newCaptions.length < newPhotos.length) {
+        newCaptions.push('');
+      }
+      setPhotoCaptions(newCaptions);
+      
+      // Initialize qualities array
+      const newQualities = newPhotos.map(() => 80);
+      setPhotoQualities(newQualities);
+      
+      // Compress all photos
+      const compressed = await Promise.all(
+        newPhotos.map(photo => compressImage(photo, 80))
       );
-      setPhotos(prevPhotos => [...prevPhotos, ...compressedPhotos]);
+      setCompressedPhotos(compressed);
     }
+  };
+
+  const handleCaptionChange = (index: number, caption: string) => {
+    const newCaptions = [...photoCaptions];
+    newCaptions[index] = caption;
+    setPhotoCaptions(newCaptions);
   };
 
   const removePhoto = (index: number) => {
@@ -130,8 +151,9 @@ export default function GalleryAdmin() {
         formData.append('existing_photos', JSON.stringify(existingPhotos));
       }
 
-      photos.forEach((photo, index) => {
-        formData.append('photos', photo);
+            photos.forEach((photo, index) => {
+        formData.append(`photo_${index}`, compressedPhotos[index] || photo);
+        formData.append(`photo_${index}_caption`, photoCaptions[index] || '');
       });
 
       const response = await fetch(backend_url + '/upload_photo_album', {

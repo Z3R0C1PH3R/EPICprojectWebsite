@@ -1,1 +1,19 @@
-{"albums": []}
+{
+  "albums": [
+    {
+      "album_number": "1",
+      "title": "2",
+      "date": "2025-07-29",
+      "description": "",
+      "upload_date": "2025-07-29 23:28:11",
+      "cover_image": "/static/gallery/album_1_cover.png",
+      "photos": [
+        "/static/gallery/album_1_photo_0.png",
+        "/static/gallery/album_1_photo_1.jpg",
+        "/static/gallery/album_1_photo_2.jpg",
+        "/static/gallery/album_1_photo_3.jpg",
+        "/static/gallery/album_1_photo_4.jpg"
+      ]
+    }
+  ]
+}

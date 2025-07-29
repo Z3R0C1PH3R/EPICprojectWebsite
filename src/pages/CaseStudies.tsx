@@ -4,47 +4,41 @@ import { useNavigate } from 'react-router-dom';
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
+interface Section {
+  image?: string;
+  heading: string;
+  body: string;
+}
+
 interface CaseStudy {
   case_study_number: string;
   title: string;
-  location: string;
-  date: string;
-  category: string;
+  location?: string;
+  date?: string;
   description: string;
-  cover_image: string;
-  pdf_file: string;
+  cover_image?: string;
+  pdf_file?: string;
+  link?: string;
+  sections?: Section[];
 }
 
 const CaseStudies = () => {
   const [caseStudies, setCaseStudies] = useState<CaseStudy[]>([]);
-  const [filteredStudies, setFilteredStudies] = useState<CaseStudy[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState('All Studies');
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchCaseStudies();
   }, []);
 
-  useEffect(() => {
-    if (selectedCategory === 'All Studies') {
-      setFilteredStudies(caseStudies);
-    } else {
-      setFilteredStudies(caseStudies.filter(study => study.category === selectedCategory));
-    }
-  }, [selectedCategory, caseStudies]);
-
   const fetchCaseStudies = async () => {
     try {
       const response = await fetch(`${backend_url}/get_case_studies`);
       const data = await response.json();
       setCaseStudies(data.case_studies);
-      setFilteredStudies(data.case_studies);
     } catch (error) {
       console.error('Error fetching case studies:', error);
     }
   };
-
-  const categories = ['All Studies', 'Water Conservation', 'Community Engagement', 'Technology', 'Social Equity', 'Climate Adaptation'];
 
   const handleViewDetails = (caseStudyNumber: string) => {
     navigate(`/case-studies/${caseStudyNumber}`);
@@ -65,32 +59,11 @@ const CaseStudies = () => {
         </div>
       </section>
 
-      {/* Filter Section */}
-      <section className="py-8 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-wrap gap-4 justify-center">
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`px-6 py-2 rounded-full font-medium transition-colors ${
-                  selectedCategory === category
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-                }`}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Case Studies Grid */}
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredStudies.map((study, index) => (
+            {caseStudies.map((study, index) => (
               <div key={index} className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
                 <div className="h-48 bg-gray-200 flex items-center justify-center">
                   {study.cover_image ? (
@@ -106,9 +79,6 @@ const CaseStudies = () => {
                 
                 <div className="p-6">
                   <div className="flex justify-between items-start mb-3">
-                    <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                      {study.category || 'General'}
-                    </span>
                     <span className="text-sm text-blue-600 bg-blue-100 px-2 py-1 rounded">
                       #{study.case_study_number}
                     </span>
@@ -116,14 +86,19 @@ const CaseStudies = () => {
                   
                   <h3 className="text-xl font-semibold mb-3 text-gray-900">{study.title}</h3>
                   
-                  <div className="flex items-center text-gray-600 mb-2">
-                    <MapPin className="h-4 w-4 mr-2" />
-                    <span className="text-sm">{study.location || 'Not specified'}</span>
-                  </div>
-                  
-                  <div className="flex items-center text-gray-600 mb-4">
-                    <Calendar className="h-4 w-4 mr-2" />
-                    <span className="text-sm">{study.date || 'Not specified'}</span>
+                  <div className="space-y-2 mb-4">
+                    {study.location && (
+                      <div className="flex items-center text-gray-600">
+                        <MapPin className="h-4 w-4 mr-2" />
+                        <span className="text-sm">{study.location}</span>
+                      </div>
+                    )}
+                    {study.date && (
+                      <div className="flex items-center text-gray-600">
+                        <Calendar className="h-4 w-4 mr-2" />
+                        <span className="text-sm">{study.date}</span>
+                      </div>
+                    )}
                   </div>
                   
                   <p className="text-gray-600 mb-6 line-clamp-3">{study.description}</p>

@@ -27,6 +27,7 @@ export default function ResourcesAdmin() {
   const [link, setLink] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingResource, setEditingResource] = useState(null);
+  const [imageQuality, setImageQuality] = useState(80);
 
   // Sections functionality
   const [numSections, setNumSections] = useState(1);
@@ -63,17 +64,6 @@ export default function ResourcesAdmin() {
       setOriginalSectionImages(newOriginalImages);
       
       const compressed = await compressImage(file, sectionQualities[index] || 80);
-      handleSectionChange(index, 'image', compressed);
-    }
-  };
-
-  const handleSectionQualityChange = async (index: number, quality: number) => {
-    const newQualities = [...sectionQualities];
-    newQualities[index] = quality;
-    setSectionQualities(newQualities);
-    
-    if (originalSectionImages[index]) {
-      const compressed = await compressImage(originalSectionImages[index]!, quality);
       handleSectionChange(index, 'image', compressed);
     }
   };
@@ -251,6 +241,7 @@ export default function ResourcesAdmin() {
             </button>
           </div>
 
+          {/* Existing Resources List */}
           <div className="grid gap-6">
             {existingResources.map((resource: any) => (
               <div
@@ -289,6 +280,7 @@ export default function ResourcesAdmin() {
           </div>
         </motion.div>
 
+        {/* New/Edit Resource Form Modal */}
         {showNewForm && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -427,19 +419,6 @@ export default function ResourcesAdmin() {
                       {section.image && (
                         <div className="mt-4">
                           <ImagePreview file={section.image} className="max-h-32 w-auto" showSize={true} />
-                          <div className="mt-2">
-                            <label className="block text-sm font-medium mb-2">
-                              Section {index + 1} Quality: {sectionQualities[index] || 80}%
-                            </label>
-                            <input
-                              type="range"
-                              min="1"
-                              max="100"
-                              value={sectionQualities[index] || 80}
-                              onChange={(e) => handleSectionQualityChange(index, Number(e.target.value))}
-                              className="w-full"
-                            />
-                          </div>
                         </div>
                       )}
                     </div>

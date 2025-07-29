@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Download, FileText, Calendar } from 'lucide-react';
+import { ArrowLeft, Download, FileText } from 'lucide-react';
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
@@ -157,45 +157,33 @@ export default function ResourceDetail() {
             </div>
 
             {/* Resource Details */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-              <div className="bg-white border border-gray-200 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Resource Information</h3>
-                <div className="space-y-3">
-                  <div>
-                    <span className="text-sm font-medium text-gray-500">Resource Number:</span>
-                    <p className="text-gray-900">#{resource.resource_number}</p>
-                  </div>
-                  {resource.type && (
-                    <div>
-                      <span className="text-sm font-medium text-gray-500">Type:</span>
-                      <p className="text-gray-900">{resource.type}</p>
-                    </div>
-                  )}
-                  {resource.download_size && (
-                    <div>
-                      <span className="text-sm font-medium text-gray-500">File Size:</span>
-                      <p className="text-gray-900">{resource.download_size}</p>
-                    </div>
-                  )}
-                  {resource.upload_date && (
-                    <div>
-                      <span className="text-sm font-medium text-gray-500">Upload Date:</span>
-                      <p className="text-gray-900">{new Date(resource.upload_date).toLocaleDateString()}</p>
-                    </div>
-                  )}
+            <div className="bg-white border border-gray-200 rounded-lg p-6 mb-12">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Resource Information</h3>
+              <div className="space-y-3">
+                <div>
+                  <span className="text-sm font-medium text-gray-500">Resource Number:</span>
+                  <p className="text-gray-900">#{resource.resource_number}</p>
                 </div>
-              </div>
-
-              <div className="bg-white border border-gray-200 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Related Resources</h3>
-                <div className="space-y-3">
-                  <a
-                    href="/resources"
-                    className="flex items-center text-blue-600 hover:text-blue-800"
-                  >
-                    <FileText className="h-4 w-4 mr-2" />
-                    Browse All Resources
-                  </a>
+                {resource.type && (
+                  <div>
+                    <span className="text-sm font-medium text-gray-500">Type:</span>
+                    <p className="text-gray-900">{resource.type}</p>
+                  </div>
+                )}
+                {resource.download_size && (
+                  <div>
+                    <span className="text-sm font-medium text-gray-500">File Size:</span>
+                    <p className="text-gray-900">{resource.download_size}</p>
+                  </div>
+                )}
+                {resource.upload_date && (
+                  <div>
+                    <span className="text-sm font-medium text-gray-500">Upload Date:</span>
+                    <p className="text-gray-900">{new Date(resource.upload_date).toLocaleDateString()}</p>
+                  </div>
+                )}
+                <div>
+                  <span className="text-sm font-medium text-gray-500">Download:</span>
                   <a
                     href={`${backend_url}${resource.file}`}
                     target="_blank"
@@ -204,13 +192,6 @@ export default function ResourceDetail() {
                   >
                     <Download className="h-4 w-4 mr-2" />
                     Direct Download Link
-                  </a>
-                  <a
-                    href="/case-studies"
-                    className="flex items-center text-blue-600 hover:text-blue-800"
-                  >
-                    <Calendar className="h-4 w-4 mr-2" />
-                    Related Case Studies
                   </a>
                 </div>
               </div>

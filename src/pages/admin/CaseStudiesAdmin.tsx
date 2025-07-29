@@ -3,11 +3,13 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Plus, Edit, Trash2, ExternalLink } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { compressImage } from '../../utils/imageCompression';
+import { ImagePreview } from '../../components/ImagePreview';
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
 export default function CaseStudiesAdmin() {
   const navigate = useNavigate();
+  
   useEffect(() => {
     const isAuthenticated = localStorage.getItem('isAuthenticated');
     if (!isAuthenticated) {
@@ -24,13 +26,21 @@ export default function CaseStudiesAdmin() {
     const today = new Date();
     return today.toISOString().split('T')[0];
   });
-  const [category, setCategory] = useState('');
   const [description, setDescription] = useState('');
-  const [coverImage, setCoverImage] = useState<File | null>(null);
   const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [link, setLink] = useState('');
+  const [coverImage, setCoverImage] = useState<File | null>(null);
+  const [originalCoverImage, setOriginalCoverImage] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingCaseStudy, setEditingCaseStudy] = useState(null);
   const [imageQuality, setImageQuality] = useState(80);
+
+  // Sections functionality
+  const [numSections, setNumSections] = useState(1);
+  const [sections, setSections] = useState([{ image: null, heading: '', body: '' }]);
+  const [sectionQualities, setSectionQualities] = useState<number[]>([80]);
+  const [originalSectionImages, setOriginalSectionImages] = useState<(File | null)[]>([]);
+  const [existingSectionImages, setExistingSectionImages] = useState<string[]>([]);
 
   useEffect(() => {
     fetchExistingCaseStudies();
@@ -49,15 +59,70 @@ export default function CaseStudiesAdmin() {
   const handleCoverImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
+      setOriginalCoverImage(file);
       const compressed = await compressImage(file, imageQuality);
       setCoverImage(compressed);
     }
   };
 
-  const handlePDFSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCoverImageQualityChange = async (quality: number) => {
+    setImageQuality(quality);
+    if (originalCoverImage) {
+      const compressed = await compressImage(originalCoverImage, quality);
+      setCoverImage(compressed);
+    }
+  };
+
+  const handlePdfFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setPdfFile(e.target.files[0]);
     }
+  };
+
+  const handleSectionImageSelect = async (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      const newOriginalImages = [...originalSectionImages];
+      newOriginalImages[index] = file;
+      setOriginalSectionImages(newOriginalImages);
+      
+      const compressed = await compressImage(file, sectionQualities[index] || 80);
+      handleSectionChange(index, 'image', compressed);
+    }
+  };
+
+  const handleSectionQualityChange = async (index: number, quality: number) => {
+    const newQualities = [...sectionQualities];
+    newQualities[index] = quality;
+    setSectionQualities(newQualities);
+    
+    if (originalSectionImages[index]) {
+      const compressed = await compressImage(originalSectionImages[index]!, quality);
+      handleSectionChange(index, 'image', compressed);
+    }
+  };
+
+  const handleSectionChange = (index: number, field: string, value: any) => {
+    const newSections = [...sections];
+    newSections[index] = { ...newSections[index], [field]: value };
+    setSections(newSections);
+  };
+
+  const updateSectionCount = (count: number) => {
+    const newCount = Math.max(1, count);
+    setNumSections(newCount);
+    setSections(current => {
+      if (newCount > current.length) {
+        return [...current, ...Array(newCount - current.length).fill({ image: null, heading: '', body: '' })];
+      }
+      return current.slice(0, newCount);
+    });
+    setSectionQualities(current => {
+      if (newCount > current.length) {
+        return [...current, ...Array(newCount - current.length).fill(80)];
+      }
+      return current.slice(0, newCount);
+    });
   };
 
   const handleViewCaseStudy = (caseStudyNumber: string) => {
@@ -85,12 +150,24 @@ export default function CaseStudiesAdmin() {
   const handleEditCaseStudy = (caseStudy: any) => {
     setCaseStudyNumber(caseStudy.case_study_number);
     setTitle(caseStudy.title);
-    setLocation(caseStudy.location);
-    setDate(caseStudy.date);
-    setCategory(caseStudy.category);
+    setLocation(caseStudy.location || '');
+    setDate(caseStudy.date || '');
     setDescription(caseStudy.description);
+    setLink(caseStudy.link || '');
     setEditingCaseStudy(caseStudy);
     setShowNewForm(true);
+    
+    // Handle sections if they exist
+    if (caseStudy.sections && caseStudy.sections.length > 0) {
+      setNumSections(caseStudy.sections.length);
+      setExistingSectionImages(caseStudy.sections.map((section: any) => section.image || ''));
+      setSections(caseStudy.sections.map((section: any) => ({
+        image: null,
+        heading: section.heading || '',
+        body: section.body || '',
+        existingImage: section.image
+      })));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -109,13 +186,13 @@ export default function CaseStudiesAdmin() {
       formData.append('title', title);
       formData.append('location', location);
       formData.append('date', date);
-      formData.append('category', category);
       formData.append('description', description);
+      formData.append('link', link);
       
       if (coverImage) {
         formData.append('cover_image', coverImage);
       }
-
+      
       if (pdfFile) {
         formData.append('pdf_file', pdfFile);
       }
@@ -123,6 +200,17 @@ export default function CaseStudiesAdmin() {
       if (editingCaseStudy) {
         formData.append('is_edit', 'true');
       }
+
+      // Add sections to form data
+      sections.forEach((section, index) => {
+        if (section.image) {
+          formData.append(`section_${index}_image`, section.image);
+        } else if (editingCaseStudy) {
+          formData.append(`section_${index}_existing_image`, existingSectionImages[index] || '');
+        }
+        formData.append(`section_${index}_heading`, section.heading);
+        formData.append(`section_${index}_body`, section.body);
+      });
 
       const response = await fetch(backend_url + '/upload_case_study', {
         method: 'POST',
@@ -149,9 +237,14 @@ export default function CaseStudiesAdmin() {
         const today = new Date();
         return today.toISOString().split('T')[0];
       });
-      setCategory('');
       setDescription('');
+      setLink('');
       setEditingCaseStudy(null);
+      setNumSections(1);
+      setSections([{ image: null, heading: '', body: '' }]);
+      setSectionQualities([80]);
+      setOriginalSectionImages([]);
+      setExistingSectionImages([]);
       
     } catch (error) {
       console.error('Upload error:', error);
@@ -205,7 +298,7 @@ export default function CaseStudiesAdmin() {
                 <div className="flex-grow">
                   <h3 className="text-xl font-semibold mb-2">{caseStudy.title}</h3>
                   <p className="text-sm text-gray-400 mb-2">
-                    Case Study #{caseStudy.case_study_number} | {caseStudy.date}
+                    Case Study #{caseStudy.case_study_number} | {caseStudy.date} | {caseStudy.location}
                   </p>
                   <p className="text-gray-300">{caseStudy.description}</p>
                 </div>
@@ -244,7 +337,7 @@ export default function CaseStudiesAdmin() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-xl text-gray-900"
+              className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-xl text-gray-900"
             >
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold">
@@ -259,72 +352,58 @@ export default function CaseStudiesAdmin() {
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Case Study Number*
-                  </label>
-                  <input
-                    type="text"
-                    value={caseStudyNumber}
-                    onChange={(e) => setCaseStudyNumber(e.target.value)}
-                    className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Case Study Number*
+                    </label>
+                    <input
+                      type="text"
+                      value={caseStudyNumber}
+                      onChange={(e) => setCaseStudyNumber(e.target.value)}
+                      className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Title*
+                    </label>
+                    <input
+                      type="text"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      required
+                    />
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Title*
-                  </label>
-                  <input
-                    type="text"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
-                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Location
+                    </label>
+                    <input
+                      type="text"
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
+                      className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
 
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Location
-                  </label>
-                  <input
-                    type="text"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Date
-                  </label>
-                  <input
-                    type="date"
-                    value={date}
-                    onChange={(e) => setDate(e.target.value)}
-                    className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Category
-                  </label>
-                  <select
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                    className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">Select Category</option>
-                    <option value="Water Conservation">Water Conservation</option>
-                    <option value="Community Engagement">Community Engagement</option>
-                    <option value="Technology">Technology</option>
-                    <option value="Social Equity">Social Equity</option>
-                    <option value="Climate Adaptation">Climate Adaptation</option>
-                  </select>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Date
+                    </label>
+                    <input
+                      type="date"
+                      value={date}
+                      onChange={(e) => setDate(e.target.value)}
+                      className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
                 </div>
 
                 <div>
@@ -340,41 +419,129 @@ export default function CaseStudiesAdmin() {
 
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Cover Image {!editingCaseStudy && '*'}
+                    External Link (Optional)
                   </label>
                   <input
-                    type="file"
-                    onChange={handleCoverImageSelect}
-                    accept="image/*"
+                    type="url"
+                    value={link}
+                    onChange={(e) => setLink(e.target.value)}
                     className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required={!editingCaseStudy}
                   />
-                  <div className="mt-2">
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
                     <label className="block text-sm font-medium mb-2">
-                      Image Quality: {imageQuality}%
+                      Cover Image {!editingCaseStudy && '*'}
                     </label>
                     <input
-                      type="range"
-                      min="1"
-                      max="100"
-                      value={imageQuality}
-                      onChange={(e) => setImageQuality(Number(e.target.value))}
-                      className="w-full"
+                      type="file"
+                      onChange={handleCoverImageSelect}
+                      accept="image/*"
+                      className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      required={!editingCaseStudy}
                     />
+                    <div className="mt-2">
+                      <label className="block text-sm font-medium mb-2">
+                        Image Quality: {imageQuality}%
+                      </label>
+                      <input
+                        type="range"
+                        min="1"
+                        max="100"
+                        value={imageQuality}
+                        onChange={(e) => handleCoverImageQualityChange(Number(e.target.value))}
+                        className="w-full"
+                      />
+                    </div>
+                    {coverImage && (
+                      <div className="mt-4">
+                        <ImagePreview file={coverImage} className="max-h-32 w-auto" showSize={true} />
+                      </div>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      PDF File (Optional)
+                    </label>
+                    <input
+                      type="file"
+                      onChange={handlePdfFileSelect}
+                      accept=".pdf"
+                      className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    {pdfFile && (
+                      <p className="text-sm text-gray-500 mt-2">
+                        Selected: {pdfFile.name} ({(pdfFile.size / 1024 / 1024).toFixed(2)} MB)
+                      </p>
+                    )}
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">
-                    PDF File
-                  </label>
+                  <label className="block text-sm font-medium mb-2">Number of Sections</label>
                   <input
-                    type="file"
-                    onChange={handlePDFSelect}
-                    accept=".pdf"
+                    type="number"
+                    min="1"
+                    value={numSections}
+                    onChange={(e) => updateSectionCount(parseInt(e.target.value))}
                     className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
+
+                {sections.map((section, index) => (
+                  <div key={index} className="mb-8 p-4 border border-gray-300 rounded-lg">
+                    <h3 className="text-lg font-medium mb-4">Section {index + 1}</h3>
+                    
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium mb-2">Section Image (Optional)</label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleSectionImageSelect(index, e)}
+                        className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      {section.image && (
+                        <div className="mt-4">
+                          <ImagePreview file={section.image} className="max-h-32 w-auto" showSize={true} />
+                          <div className="mt-2">
+                            <label className="block text-sm font-medium mb-2">
+                              Section {index + 1} Quality: {sectionQualities[index] || 80}%
+                            </label>
+                            <input
+                              type="range"
+                              min="1"
+                              max="100"
+                              value={sectionQualities[index] || 80}
+                              onChange={(e) => handleSectionQualityChange(index, Number(e.target.value))}
+                              className="w-full"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium mb-2">Section Heading</label>
+                      <input
+                        type="text"
+                        value={section.heading}
+                        onChange={(e) => handleSectionChange(index, 'heading', e.target.value)}
+                        className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium mb-2">Section Body</label>
+                      <textarea
+                        value={section.body}
+                        onChange={(e) => handleSectionChange(index, 'body', e.target.value)}
+                        className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 h-24 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+                ))}
 
                 <div className="flex gap-4">
                   <button

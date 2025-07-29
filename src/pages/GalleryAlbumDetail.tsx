@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Calendar, MapPin, ZoomIn, X } from 'lucide-react';
+import { ArrowLeft, Calendar, ZoomIn, X } from 'lucide-react';
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
@@ -47,6 +47,20 @@ export default function GalleryAlbumDetail() {
 
     fetchAlbum();
   }, [albumNumber]);
+
+  // Handle ESC key to close modal
+  useEffect(() => {
+    const handleEsc = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setSelectedImage(null);
+      }
+    };
+    
+    if (selectedImage) {
+      document.addEventListener('keydown', handleEsc);
+      return () => document.removeEventListener('keydown', handleEsc);
+    }
+  }, [selectedImage]);
 
   if (loading) {
     return (
@@ -136,13 +150,13 @@ export default function GalleryAlbumDetail() {
                   <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="relative group cursor-pointer"
+                    className="relative group cursor-pointer aspect-square"
                     onClick={() => setSelectedImage(album.cover_image)}
                   >
                     <img
                       src={`${backend_url}${album.cover_image}`}
                       alt="Album cover"
-                      className="w-full h-64 object-cover rounded-lg"
+                      className="w-full h-full object-cover rounded-lg"
                     />
                     <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 rounded-lg flex items-center justify-center">
                       <ZoomIn className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -160,13 +174,13 @@ export default function GalleryAlbumDetail() {
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: index * 0.1 }}
-                    className="relative group cursor-pointer"
+                    className="relative group cursor-pointer aspect-square"
                     onClick={() => setSelectedImage(photo)}
                   >
                     <img
                       src={`${backend_url}${photo}`}
                       alt={`Photo ${index + 1}`}
-                      className="w-full h-64 object-cover rounded-lg"
+                      className="w-full h-full object-cover rounded-lg"
                     />
                     <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 rounded-lg flex items-center justify-center">
                       <ZoomIn className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -191,8 +205,8 @@ export default function GalleryAlbumDetail() {
                   </div>
                 )}
                 <div>
-                  <span className="text-sm font-medium text-gray-500">Photos:</span>
-                  <p className="text-gray-900">{(album.photos?.length || 0) + (album.cover_image ? 1 : 0)} total</p>
+                  <span className="text-sm font-medium text-gray-500">Total Photos:</span>
+                  <p className="text-gray-900">{(album.photos?.length || 0) + (album.cover_image ? 1 : 0)}</p>
                 </div>
               </div>
             </div>
@@ -202,18 +216,22 @@ export default function GalleryAlbumDetail() {
 
       {/* Image Modal */}
       {selectedImage && (
-        <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4">
-          <div className="relative max-w-5xl max-h-full">
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4"
+          onClick={() => setSelectedImage(null)}
+        >
+          <div className="relative w-full h-full flex items-center justify-center">
             <button
               onClick={() => setSelectedImage(null)}
-              className="absolute -top-12 right-0 text-white hover:text-gray-300"
+              className="absolute top-4 right-4 z-10 bg-black bg-opacity-50 text-white hover:bg-opacity-70 transition-all p-2 rounded-full"
             >
-              <X className="h-8 w-8" />
+              <X className="h-6 w-6" />
             </button>
             <img
               src={`${backend_url}${selectedImage}`}
               alt="Full size"
               className="max-w-full max-h-full object-contain"
+              onClick={(e) => e.stopPropagation()}
             />
           </div>
         </div>
