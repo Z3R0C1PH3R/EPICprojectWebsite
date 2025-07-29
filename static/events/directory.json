@@ -1,0 +1,16 @@
+{
+  "events": [
+    {
+      "event_number": "1",
+      "title": "Meow",
+      "date": "2025-07-24",
+      "location": "Somewhere over the rainbow",
+      "type": "",
+      "status": "Upcoming",
+      "description": "ih",
+      "upload_date": "2025-07-25 01:30:41",
+      "cover_image": "/static/events/event_1_cover.png",
+      "registration_link": ""
+    }
+  ]
+}

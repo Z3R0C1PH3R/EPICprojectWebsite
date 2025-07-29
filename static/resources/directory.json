@@ -1,0 +1,13 @@
+{
+  "resources": [
+    {
+      "resource_number": "1",
+      "title": "1Testing",
+      "type": "Research Report",
+      "description": "Meowww",
+      "upload_date": "2025-07-25 00:53:04",
+      "file": "/static/resources/resource_1.pdf",
+      "download_size": "16.1 MB"
+    }
+  ]
+}
