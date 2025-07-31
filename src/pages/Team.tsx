@@ -97,9 +97,23 @@ const Team = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Core Research Team</h2>
-            <p className="text-lg text-gray-600">
+            <p className="text-lg text-gray-600 mb-8">
               Our multidisciplinary team brings together expertise from various fields to address complex irrigation challenges.
             </p>
+            
+            {/* Group Photo */}
+            <div className="mb-12">
+              <div className="relative max-w-4xl mx-auto">
+                <img
+                  src="/group.jpg"
+                  alt="EPIC Project Team"
+                  className="w-full h-auto rounded-lg shadow-lg"
+                />
+                <div className="absolute bottom-4 left-4 bg-black bg-opacity-70 text-white px-4 py-2 rounded-lg">
+                  <p className="text-sm font-medium">EPIC Project Team</p>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -160,34 +174,6 @@ const Team = () => {
                 <p className="text-gray-600">{advisor.affiliation}</p>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Team Statistics */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Team Impact</h2>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className="text-4xl font-bold text-blue-600 mb-2">25+</div>
-              <p className="text-gray-600">Team Members</p>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-blue-600 mb-2">50+</div>
-              <p className="text-gray-600">Research Papers</p>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-blue-600 mb-2">15</div>
-              <p className="text-gray-600">Countries</p>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-blue-600 mb-2">100+</div>
-              <p className="text-gray-600">Collaborations</p>
-            </div>
           </div>
         </div>
       </section>

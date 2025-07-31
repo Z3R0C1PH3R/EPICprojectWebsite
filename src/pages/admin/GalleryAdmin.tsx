@@ -27,6 +27,9 @@ export default function GalleryAdmin() {
   });
   const [coverImage, setCoverImage] = useState<File | null>(null);
   const [photos, setPhotos] = useState<File[]>([]);
+  const [photoCaptions, setPhotoCaptions] = useState<string[]>([]);
+  const [photoQualities, setPhotoQualities] = useState<number[]>([]);
+  const [compressedPhotos, setCompressedPhotos] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingAlbum, setEditingAlbum] = useState(null);
   const [coverQuality, setCoverQuality] = useState(80);
@@ -422,23 +425,32 @@ export default function GalleryAdmin() {
                 {photos.length > 0 && (
                   <div>
                     <label className="block text-sm font-medium mb-2">
-                      New Photos
+                      New Photos with Captions
                     </label>
-                    <div className="grid grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {photos.map((photo, index) => (
-                        <div key={index} className="relative">
-                          <img
-                            src={URL.createObjectURL(photo)}
-                            alt={`New photo ${index + 1}`}
-                            className="w-full h-24 object-cover rounded-lg"
+                        <div key={index} className="space-y-2">
+                          <div className="relative">
+                            <ImagePreview 
+                              file={compressedPhotos[index] || photo} 
+                              className="w-full h-32 object-cover rounded" 
+                              showSize={true}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => removePhoto(index)}
+                              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                          <input
+                            type="text"
+                            placeholder={`Caption for photo ${index + 1} (optional)`}
+                            value={photoCaptions[index] || ''}
+                            onChange={(e) => handleCaptionChange(index, e.target.value)}
+                            className="w-full bg-gray-100 border border-gray-300 rounded px-2 py-1 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-500"
                           />
-                          <button
-                            type="button"
-                            onClick={() => removePhoto(index)}
-                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
-                          >
-                            ✕
-                          </button>
                         </div>
                       ))}
                     </div>

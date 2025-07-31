@@ -21,7 +21,11 @@ const Header = () => {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-2">
-              <Droplets className="h-8 w-8 text-blue-600" />
+              <img 
+                src="/logo.png" 
+                alt="EPIC Logo" 
+                className="h-12 w-auto"
+              />              
               <div>
                 <span className="text-xl font-bold text-gray-900">EPIC</span>
                 <p className="text-xs text-gray-600">Equity Perspectives for Irrigation Care</p>

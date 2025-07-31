@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, Filter, ZoomIn, Calendar } from 'lucide-react';
+import { Search, ZoomIn, Calendar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
@@ -14,37 +14,18 @@ interface Album {
 }
 
 const Gallery = () => {
-  const [selectedCategory, setSelectedCategory] = useState('All');
   const [albums, setAlbums] = useState<Album[]>([]);
-  const [filteredAlbums, setFilteredAlbums] = useState<Album[]>([]);
   const navigate = useNavigate();
-
-  const categories = [
-    'All',
-    'Irrigation Systems',
-    'Field Work',
-    'Technology',
-    'Communities',
-    'Training',
-    'Events',
-    'Research'
-  ];
 
   useEffect(() => {
     fetchAlbums();
   }, []);
-
-  useEffect(() => {
-    // For now, show all albums since we don't have category field in the data
-    setFilteredAlbums(albums);
-  }, [selectedCategory, albums]);
 
   const fetchAlbums = async () => {
     try {
       const response = await fetch(`${backend_url}/get_photo_albums`);
       const data = await response.json();
       setAlbums(data.albums);
-      setFilteredAlbums(data.albums);
     } catch (error) {
       console.error('Error fetching albums:', error);
     }
@@ -69,7 +50,7 @@ const Gallery = () => {
         </div>
       </section>
 
-      {/* Search and Filter */}
+      {/* Search */}
       <section className="py-8 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row gap-4 mb-8">
@@ -81,26 +62,6 @@ const Gallery = () => {
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-            <button className="flex items-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50">
-              <Filter className="h-5 w-5 mr-2" />
-              More Filters
-            </button>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                  selectedCategory === category
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-                }`}
-              >
-                {category}
-              </button>
-            ))}
           </div>
         </div>
       </section>
@@ -109,7 +70,7 @@ const Gallery = () => {
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredAlbums.map((album) => (
+            {albums.map((album) => (
               <div key={album.album_number} className="group bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
                 <div className="h-48 bg-gray-200 overflow-hidden">
                   {album.cover_image ? (
@@ -156,57 +117,6 @@ const Gallery = () => {
                 </div>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Gallery Statistics */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Gallery Impact</h2>
-            <p className="text-lg text-gray-600">
-              Our visual documentation spans multiple countries and showcases the global reach of our work.
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className="text-4xl font-bold text-blue-600 mb-2">500+</div>
-              <p className="text-gray-600">Photos</p>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-blue-600 mb-2">15</div>
-              <p className="text-gray-600">Countries</p>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-blue-600 mb-2">50+</div>
-              <p className="text-gray-600">Projects</p>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-blue-600 mb-2">100+</div>
-              <p className="text-gray-600">Communities</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Contribute Section */}
-      <section className="py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-blue-600 text-white rounded-2xl p-8 md:p-12 text-center">
-            <h2 className="text-3xl font-bold mb-4">Share Your Story</h2>
-            <p className="text-xl mb-8 text-blue-100">
-              Have photos or stories from your irrigation project? We'd love to feature your work in our gallery.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-                Submit Photos
-              </button>
-              <button className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors">
-                Learn More
-              </button>
-            </div>
           </div>
         </div>
       </section>

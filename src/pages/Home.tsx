@@ -6,8 +6,19 @@ const Home = () => {
   return (
     <div className="bg-white">
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20 overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <img
+            src="/Rabi_paddy.jpg"
+            alt="Rice paddy fields"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-blue-800/50" />
+        </div>
+        
+        {/* Content */}
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
               EPIC: Equity Perspectives for Irrigation Care or Control
@@ -35,7 +46,35 @@ const Home = () => {
       </section>
 
       {/* Mission Section */}
-      <section className="py-16 bg-gray-50">
+      {/* Project Video */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+              About Our Project
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Watch this video to learn more about our research, impact, and the communities we work with.
+            </p>
+          </div>
+          
+          <div className="flex justify-center">
+            <div className="w-full max-w-4xl">
+              <div className="relative pb-[56.25%] h-0 overflow-hidden rounded-lg shadow-xl">
+                <iframe 
+                  src="https://drive.google.com/file/d/1KdZgHGjE1HxxnI5DKQLnVKjwKdLOJyxd/preview" 
+                  className="absolute top-0 left-0 w-full h-full"
+                  allow="autoplay"
+                  title="EPIC Project Video"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Research Areas */}
+      <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Mission</h2>
