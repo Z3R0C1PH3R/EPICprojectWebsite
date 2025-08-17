@@ -98,7 +98,6 @@ export default function EventDetail() {
             Back to Events
           </button>
           <div className="max-w-4xl">
-            <span className="text-blue-200 text-sm">Event #{event.event_number}</span>
             <h1 className="text-4xl md:text-5xl font-bold mb-6">{event.title}</h1>
             <div className="flex flex-wrap gap-6 text-blue-100">
               {event.date && (
@@ -195,10 +194,6 @@ export default function EventDetail() {
             <div className="bg-white border border-gray-200 rounded-lg p-6 mb-12">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Event Information</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <span className="text-sm font-medium text-gray-500">Event Number:</span>
-                  <p className="text-gray-900">#{event.event_number}</p>
-                </div>
                 {event.status && (
                   <div>
                     <span className="text-sm font-medium text-gray-500">Status:</span>

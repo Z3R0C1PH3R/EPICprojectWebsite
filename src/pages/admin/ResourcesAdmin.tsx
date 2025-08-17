@@ -19,7 +19,6 @@ export default function ResourcesAdmin() {
 
   const [showNewForm, setShowNewForm] = useState(false);
   const [existingResources, setExistingResources] = useState([]);
-  const [resourceNumber, setResourceNumber] = useState('');
   const [title, setTitle] = useState('');
   const [type, setType] = useState('');
   const [description, setDescription] = useState('');
@@ -124,7 +123,6 @@ export default function ResourcesAdmin() {
   };
 
   const handleEditResource = (resource: any) => {
-    setResourceNumber(resource.resource_number);
     setTitle(resource.title);
     setType(resource.type);
     setDescription(resource.description);
@@ -153,8 +151,8 @@ export default function ResourcesAdmin() {
       return;
     }
     
-    if (!resourceNumber || !title) {
-      alert('Please fill in resource number and title');
+    if (!title) {
+      alert('Please fill in title');
       return;
     }
 
@@ -162,7 +160,6 @@ export default function ResourcesAdmin() {
     
     try {
       const formData = new FormData();
-      formData.append('resource_number', resourceNumber);
       formData.append('title', title);
       formData.append('type', type);
       formData.append('description', description);
@@ -204,7 +201,6 @@ export default function ResourcesAdmin() {
       
       // Clear form
       setResourceFile(null);
-      setResourceNumber('');
       setTitle('');
       setType('');
       setDescription('');
@@ -313,32 +309,17 @@ export default function ResourcesAdmin() {
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Resource Number*
-                    </label>
-                    <input
-                      type="text"
-                      value={resourceNumber}
-                      onChange={(e) => setResourceNumber(e.target.value)}
-                      className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Title*
-                    </label>
-                    <input
-                      type="text"
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                      className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      required
-                    />
-                  </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Title*
+                  </label>
+                  <input
+                    type="text"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
                 </div>
 
                 <div>

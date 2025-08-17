@@ -94,7 +94,7 @@ export default function AdminPortal() {
             </button>
           </div>
           
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl mx-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 max-w-4xl mx-auto">
             <button 
               className="bg-blue-600 hover:bg-blue-700 text-white py-4 px-6 rounded-lg transition-colors"
               onClick={() => navigate('/admin/case-studies')}
@@ -118,6 +118,12 @@ export default function AdminPortal() {
               onClick={() => navigate('/admin/gallery')}
             >
               Gallery
+            </button>
+            <button 
+              className="bg-blue-600 hover:bg-blue-700 text-white py-4 px-6 rounded-lg transition-colors"
+              onClick={() => navigate('/admin/team')}
+            >
+              Team
             </button>
           </div>
         </motion.div>

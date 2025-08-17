@@ -91,7 +91,6 @@ export default function CaseStudyDetail() {
             Back to Case Studies
           </button>
           <div className="max-w-4xl">
-            <span className="text-blue-200 text-sm">Case Study #{caseStudy.case_study_number}</span>
             <h1 className="text-4xl md:text-5xl font-bold mb-6">{caseStudy.title}</h1>
             <div className="flex flex-wrap gap-6 text-blue-100">
               {caseStudy.location && (
@@ -168,10 +167,6 @@ export default function CaseStudyDetail() {
             <div className="bg-white border border-gray-200 rounded-lg p-6 mb-12">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Study Information</h3>
               <div className="space-y-3">
-                <div>
-                  <span className="text-sm font-medium text-gray-500">Case Study Number:</span>
-                  <p className="text-gray-900">#{caseStudy.case_study_number}</p>
-                </div>
                 {caseStudy.category && (
                   <div>
                     <span className="text-sm font-medium text-gray-500">Category:</span>

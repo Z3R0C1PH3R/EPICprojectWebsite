@@ -2,15 +2,33 @@
   "events": [
     {
       "event_number": "1",
-      "title": "Seminar",
-      "date": "2025-08-06",
-      "location": "IIT Delhi",
+      "title": "Test",
+      "date": "2025-08-17",
+      "location": "Somewhere",
       "type": "",
       "status": "Upcoming",
-      "description": "About the event",
-      "upload_date": "2025-08-04 18:37:59",
-      "cover_image": "/static/events/event_1_cover.png",
+      "description": "Nyan",
+      "upload_date": "2025-08-17 18:23:14",
+      "cover_image": "/static/events/event_1_cover.jpg",
       "registration_link": ""
+    },
+    {
+      "event_number": "2",
+      "title": "121212",
+      "date": "2025-08-17",
+      "location": "1",
+      "type": "",
+      "status": "Upcoming",
+      "description": "2",
+      "upload_date": "2025-08-17 18:39:20",
+      "cover_image": "/static/events/event_2_cover.jpg",
+      "registration_link": "",
+      "sections": [
+        {
+          "heading": "1",
+          "body": "2"
+        }
+      ]
     }
   ]
 }

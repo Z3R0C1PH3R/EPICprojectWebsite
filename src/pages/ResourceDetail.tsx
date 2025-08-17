@@ -102,7 +102,6 @@ export default function ResourceDetail() {
                 {resource.type}
               </span>
             </div>
-            <span className="text-blue-200 text-sm">Resource #{resource.resource_number}</span>
             <h1 className="text-4xl md:text-5xl font-bold mb-6">{resource.title}</h1>
             {resource.download_size && (
               <div className="flex items-center text-blue-100">
@@ -160,10 +159,7 @@ export default function ResourceDetail() {
             <div className="bg-white border border-gray-200 rounded-lg p-6 mb-12">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Resource Information</h3>
               <div className="space-y-3">
-                <div>
-                  <span className="text-sm font-medium text-gray-500">Resource Number:</span>
-                  <p className="text-gray-900">#{resource.resource_number}</p>
-                </div>
+
                 {resource.type && (
                   <div>
                     <span className="text-sm font-medium text-gray-500">Type:</span>

@@ -19,7 +19,6 @@ export default function CaseStudiesAdmin() {
 
   const [showNewForm, setShowNewForm] = useState(false);
   const [existingCaseStudies, setExistingCaseStudies] = useState([]);
-  const [caseStudyNumber, setCaseStudyNumber] = useState('');
   const [title, setTitle] = useState('');
   const [location, setLocation] = useState('');
   const [date, setDate] = useState(() => {
@@ -148,7 +147,6 @@ export default function CaseStudiesAdmin() {
   };
 
   const handleEditCaseStudy = (caseStudy: any) => {
-    setCaseStudyNumber(caseStudy.case_study_number);
     setTitle(caseStudy.title);
     setLocation(caseStudy.location || '');
     setDate(caseStudy.date || '');
@@ -173,8 +171,8 @@ export default function CaseStudiesAdmin() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if ((!coverImage && !editingCaseStudy) || !caseStudyNumber || !title) {
-      alert('Please fill in at least case study number, title, and cover image');
+    if ((!coverImage && !editingCaseStudy) || !title) {
+      alert('Please fill in at least title and cover image');
       return;
     }
 
@@ -182,7 +180,6 @@ export default function CaseStudiesAdmin() {
     
     try {
       const formData = new FormData();
-      formData.append('case_study_number', caseStudyNumber);
       formData.append('title', title);
       formData.append('location', location);
       formData.append('date', date);
@@ -230,7 +227,6 @@ export default function CaseStudiesAdmin() {
       // Clear form
       setCoverImage(null);
       setPdfFile(null);
-      setCaseStudyNumber('');
       setTitle('');
       setLocation('');
       setDate(() => {
@@ -352,32 +348,17 @@ export default function CaseStudiesAdmin() {
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Case Study Number*
-                    </label>
-                    <input
-                      type="text"
-                      value={caseStudyNumber}
-                      onChange={(e) => setCaseStudyNumber(e.target.value)}
-                      className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Title*
-                    </label>
-                    <input
-                      type="text"
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                      className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      required
-                    />
-                  </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Title*
+                  </label>
+                  <input
+                    type="text"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

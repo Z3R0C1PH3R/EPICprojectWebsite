@@ -104,7 +104,6 @@ export default function GalleryAlbumDetail() {
             Back to Gallery
           </button>
           <div className="max-w-4xl">
-            <span className="text-blue-200 text-sm">Album #{album.album_number}</span>
             <h1 className="text-4xl md:text-5xl font-bold mb-6">{album.title}</h1>
             <div className="flex flex-wrap gap-6 text-blue-100">
               {album.date && (
@@ -194,10 +193,7 @@ export default function GalleryAlbumDetail() {
             <div className="bg-gray-50 rounded-lg p-8">
               <h3 className="text-xl font-semibold text-gray-900 mb-4">Album Information</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div>
-                  <span className="text-sm font-medium text-gray-500">Album Number:</span>
-                  <p className="text-gray-900">#{album.album_number}</p>
-                </div>
+
                 {album.date && (
                   <div>
                     <span className="text-sm font-medium text-gray-500">Date:</span>

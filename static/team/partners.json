@@ -1,0 +1,50 @@
+[
+  {
+    "id": "1",
+    "name": "Agricultural Engineering Institute",
+    "description": "Leading research in sustainable irrigation systems and water resource management.",
+    "members": []
+  },
+  {
+    "id": "2",
+    "name": "Environmental Science Center",
+    "description": "Specializing in climate adaptation strategies and community-based water management.",
+    "members": []
+  },
+  {
+    "id": "3",
+    "name": "Development Studies Foundation",
+    "description": "Focusing on gender equity in irrigation access and participatory approaches.",
+    "members": []
+  },
+  {
+    "id": "4",
+    "name": "Technology Innovation Lab",
+    "description": "Developing smart irrigation systems and IoT solutions for precision agriculture.",
+    "members": []
+  },
+  {
+    "id": "5",
+    "name": "Agricultural Economics Research",
+    "description": "Coordinating field studies and community engagement programs.",
+    "members": []
+  },
+  {
+    "id": "6",
+    "name": "Data Analytics Institute",
+    "description": "Leading data analysis and modeling efforts for irrigation system effectiveness.",
+    "members": []
+  },
+  {
+    "id": "7",
+    "name": "Water Resources Center",
+    "description": "Providing strategic guidance and oversight for research initiatives.",
+    "members": []
+  },
+  {
+    "id": "8",
+    "name": "International Water Management",
+    "description": "Regional advisory and technical support for water management projects.",
+    "members": []
+  }
+]

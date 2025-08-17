@@ -18,7 +18,6 @@ export default function GalleryAdmin() {
 
   const [showNewForm, setShowNewForm] = useState(false);
   const [existingAlbums, setExistingAlbums] = useState([]);
-  const [albumNumber, setAlbumNumber] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [date, setDate] = useState(() => {
@@ -119,7 +118,6 @@ export default function GalleryAdmin() {
   };
 
   const handleEditAlbum = (album: any) => {
-    setAlbumNumber(album.album_number);
     setTitle(album.title);
     setDescription(album.description || '');
     setDate(album.date);
@@ -131,8 +129,8 @@ export default function GalleryAdmin() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if ((!coverImage && !editingAlbum) || !albumNumber || !title) {
-      alert('Please fill in at least album number, title, and cover image');
+    if ((!coverImage && !editingAlbum) || !title) {
+      alert('Please fill in at least title and cover image');
       return;
     }
 
@@ -140,7 +138,6 @@ export default function GalleryAdmin() {
     
     try {
       const formData = new FormData();
-      formData.append('album_number', albumNumber);
       formData.append('title', title);
       formData.append('description', description);
       formData.append('date', date);
@@ -177,7 +174,6 @@ export default function GalleryAdmin() {
       // Clear form
       setCoverImage(null);
       setPhotos([]);
-      setAlbumNumber('');
       setTitle('');
       setDescription('');
       setDate(() => {
@@ -293,19 +289,6 @@ export default function GalleryAdmin() {
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Album Number*
-                  </label>
-                  <input
-                    type="text"
-                    value={albumNumber}
-                    onChange={(e) => setAlbumNumber(e.target.value)}
-                    className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
-                </div>
-
                 <div>
                   <label className="block text-sm font-medium mb-2">
                     Title*

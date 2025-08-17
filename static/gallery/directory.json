@@ -1,13 +1,3 @@
 {
-  "albums": [
-    {
-      "album_number": "1",
-      "title": "Field visit",
-      "date": "2025-08-04",
-      "description": "Something",
-      "upload_date": "2025-08-04 18:47:53",
-      "cover_image": "/static/gallery/album_1_cover.jpg",
-      "photos": []
-    }
-  ]
+  "albums": []
 }

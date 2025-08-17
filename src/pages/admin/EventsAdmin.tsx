@@ -17,7 +17,6 @@ export default function EventsAdmin() {
 
   const [showNewForm, setShowNewForm] = useState(false);
   const [existingEvents, setExistingEvents] = useState([]);
-  const [eventNumber, setEventNumber] = useState('');
   const [title, setTitle] = useState('');
   const [date, setDate] = useState(() => {
     const today = new Date();
@@ -113,7 +112,6 @@ export default function EventsAdmin() {
   };
 
   const handleEditEvent = (event: any) => {
-    setEventNumber(event.event_number);
     setTitle(event.title);
     setDate(event.date);
     setTime(event.time || '');
@@ -139,8 +137,8 @@ export default function EventsAdmin() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if ((!coverImage && !editingEvent) || !eventNumber || !title) {
-      alert('Please fill in at least event number, title, and cover image');
+    if ((!coverImage && !editingEvent) || !title) {
+      alert('Please fill in at least title and cover image');
       return;
     }
 
@@ -148,7 +146,6 @@ export default function EventsAdmin() {
     
     try {
       const formData = new FormData();
-      formData.append('event_number', eventNumber);
       formData.append('title', title);
       formData.append('date', date);
       formData.append('time', time);
@@ -192,7 +189,6 @@ export default function EventsAdmin() {
       
       // Clear form
       setCoverImage(null);
-      setEventNumber('');
       setTitle('');
       setDate(() => {
         const today = new Date();
@@ -310,19 +306,6 @@ export default function EventsAdmin() {
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Event Number*
-                  </label>
-                  <input
-                    type="text"
-                    value={eventNumber}
-                    onChange={(e) => setEventNumber(e.target.value)}
-                    className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
-                </div>
-
                 <div>
                   <label className="block text-sm font-medium mb-2">
                     Title*
