@@ -84,7 +84,7 @@ const Home = () => {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
               <div className="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                 <Target className="h-8 w-8 text-blue-600" />
@@ -114,7 +114,7 @@ const Home = () => {
                 Scaling successful irrigation practices to benefit communities across different regions and climates.
               </p>
             </div>
-          </div>
+          </div> */}
         </div>
       </section>
 

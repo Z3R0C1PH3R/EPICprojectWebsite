@@ -28,7 +28,7 @@ const Header = () => {
               />              
               <div>
                 <span className="text-xl font-bold text-gray-900">EPIC</span>
-                <p className="text-xs text-gray-600">Equity Perspectives for Irrigation Care</p>
+                <p className="text-xs text-gray-600">Equity Perspectives for Irrigation Care or Control</p>
               </div>
             </Link>
           </div>

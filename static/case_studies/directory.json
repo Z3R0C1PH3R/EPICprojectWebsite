@@ -1,15 +1,1 @@
-{
-  "case_studies": [
-    {
-      "case_study_number": "1",
-      "title": "t",
-      "location": "meowtown",
-      "date": "2025-07-24",
-      "category": "",
-      "upload_date": "2025-07-25 00:53:56",
-      "cover_image": "/static/case_studies/case_study_1_cover.png",
-      "pdf_file": null,
-      "description": "knkdas"
-    }
-  ]
-}
+{"case_studies": []}

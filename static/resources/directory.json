@@ -2,12 +2,21 @@
   "resources": [
     {
       "resource_number": "1",
-      "title": "1Testing",
-      "type": "Research Report",
-      "description": "Meowww",
-      "upload_date": "2025-07-25 00:53:04",
-      "file": "/static/resources/resource_1.pdf",
-      "download_size": "16.1 MB"
+      "title": "Website",
+      "type": "Research",
+      "description": "Info about the resource",
+      "upload_date": "2025-08-04 19:04:50",
+      "file": null,
+      "download_size": ""
+    },
+    {
+      "resource_number": "2",
+      "title": "Something else",
+      "type": "Guide",
+      "description": "lknalkdns",
+      "upload_date": "2025-08-04 19:08:25",
+      "file": "/static/resources/resource_2.jpg",
+      "download_size": ""
     }
   ]
 }
