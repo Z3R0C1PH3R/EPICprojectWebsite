@@ -1,1 +1,49 @@
-{"case_studies": []}
+{
+  "case_studies": [
+    {
+      "case_study_number": "1",
+      "title": "Gaya Case Study",
+      "location": "Bishunganj Village, Chandauti Block, Gaya District, Bihar",
+      "date": "2025-08-17",
+      "category": "",
+      "upload_date": "2025-08-18 02:49:45",
+      "cover_image": "/static/case_studies/case_study_1_cover.jpg",
+      "pdf_file": null,
+      "description": "Bishunganj is a village located in Chandauti Block, within the Gaya district of Bihar. The region lies in the Ganga River Basin, specifically in the upper reaches of the Falgu sub-basin, and falls under the semi-arid agro-climatic zone. Agriculture is the predominant livelihood, with water-intensive crops like paddy heavily dependent on irrigation.\r\nThe Ahar-Pyne system is an indigenous irrigation technology practiced since 5000 years ago.  It was a well managed irrigation system of Magadh Kingdom. It still continues to irrigate substantial areas in the South Bihar plains (that includes Gaya) of India.  The water reservoir created by the embankment is called ahar while the drainage channels carrying the water to or away from it are called pynes. While these systems still exist, they now operate alongside and in competition with private borewells and electric/diesel pump-based irrigation, creating complex interactions between individual and community based irrigation systems. \r\n",
+      "sections": [
+        {
+          "heading": "Brief Description of the Problem:",
+          "body": "While the ahar in Bishunganj (Gaya) technically exists and is still used by some, the village's irrigation economy is now largely dominated by privately owned tubewells and unmetered electric pumps. This case study investigates how the irrigation system in Gaya evolved over decades from Ahar-pyne irrigation system (Community) or other community based irrigation system to drip/borewell irrigation system (individual). The shift from community based ahar-pyne systems to increasingly individualized, pump-based irrigation reflects not only technological change but also growing inequities in water access.\r\n"
+        },
+        {
+          "heading": "Research Questions:",
+          "body": "1. How has the irrigation system in Gaya evolved over decades from Ahar-pyne irrigation system (Community) or other community based irrigation system to drip/borewell irrigation system (individual). \r\n2. How do public investments/subsidies in irrigation technology shape long-term irrigation access, and do they truly address structural inequities in accessing irrigation technology (Gender, Caste, Class, Landholdings etc) or do they create new layers of exclusion?\r\n3. Is there any connection between the promotion of private borewell, micro irrigation and horticulture schemes on the community managed traditional surface water schemes used for Kharif irrigation, e.g. the ahar-pyne system? \r\n\r\n\r\nThrough this case study, we aim to explore how indigenous irrigation technology and emerging irrigation markets co-exist and interact in everyday practice.The findings will help frame policy for equitable water access.\r\n"
+        }
+      ]
+    },
+    {
+      "case_study_number": "2",
+      "title": "Andhra Pradesh Case study",
+      "location": "Andhra Pradesh, India",
+      "date": "2025-08-17",
+      "category": "",
+      "upload_date": "2025-08-18 02:53:45",
+      "cover_image": "/static/case_studies/case_study_2_cover.jpg",
+      "pdf_file": null,
+      "description": "About 55% of India\u2019s gross cropped area is rainfed. The lack of irrigation and increasing water insecurity push farmers into competitive borewell drilling, resulting in sinking groundwater tables and distress from borewell failure. The Rayalaseema region of Andhra Pradesh, India, is one such region where the organization WASSAN responded by collectivizing non-borewell-owning and borewell-owning farmers to pool groundwater from existing borewells amongst collectivized farmers through a pipeline network. The goal was to secure the rainfed farms with supplemental irrigation while arresting competitive borewell drilling. In this paper, we study the practice of groundwater sharing within the collectives and its implications for equity and sustainability in groundwater use. The case study is Kolagungti Chenu Groundwater Collective in the groundwater overexploited block of Gandlapenta. Using primary fieldwork and ethnographic methods, we study how the collective evolved over the past 15 years. We find that all farmers find collectivization beneficial for different reasons. This case study highlights that equity is not necessarily understood as equality since each farmer has a different idea of what they are entitled to, even in the case of a common-pool resource, thus exacerbating existing inequalities. Moreover, this perspective of equity may not imply the sustainability of the resource.\r\n",
+      "sections": []
+    },
+    {
+      "case_study_number": "3",
+      "title": "ATREE Case Study",
+      "location": "Maharashtra, India",
+      "date": "2025-08-17",
+      "category": "",
+      "upload_date": "2025-08-18 02:58:24",
+      "cover_image": "/static/case_studies/case_study_3_cover.jpg",
+      "pdf_file": null,
+      "description": "Public-funded centralised canal irrigation systems face many challenges pertaining to operation and maintenance. These challenges include excessive physical and apparent water losses and inequitable water distribution, especially in the tail part of the canal, which is not adequately served. Additionally, authorities experience challenges of land acquisition while constructing a canal network in the command area. To overcome these challenges and as a part of the modernisation of irrigation systems, the technology of pipe distribution network (PDN) is promoted where the open canals are replaced with closed pipelines to improve water use efficiency and control water flows. In India, many states have adopted this technology. In these states, all new irrigation schemes are designed with PDN, and some of the existing schemes are in the process of converting partly or wholly from open canal infrastructure to a pipe network, wherever feasible.\r\n",
+      "sections": []
+    }
+  ]
+}
