@@ -1,6 +1,6 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { Target, Users, Globe, BookOpen, Lightbulb, BarChart3, MapPin, Calendar } from 'lucide-react';
+import InteractiveWorldMap from '../components/InteractiveWorldMap';
 
 const About = () => {
   return (
@@ -210,6 +210,21 @@ const About = () => {
               </p>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Global Research Locations */}
+      <section className="py-16">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Research Locations</h2>
+            <p className="text-lg text-gray-600 max-w-4xl mx-auto">
+              Explore our case studies from different regions. Click on any location marker to learn more about 
+              the specific challenges and solutions we're working on in that area.
+            </p>
+          </div>
+          
+          <InteractiveWorldMap />
         </div>
       </section>
 

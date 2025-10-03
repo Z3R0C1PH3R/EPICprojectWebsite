@@ -279,66 +279,74 @@ def upload_event():
 @app.route("/upload_resource", methods=["POST"])
 def upload_resource():
     try:
-        if not all(field in request.form for field in ['title']):
-            return jsonify({"error": "Missing required fields"}), 400
-
-        # Generate automatic resource number
-        with open(RESOURCES_DIR_FILE, 'r') as f:
-            data = json.load(f)
-        existing_resources = data.get('resources', [])
-        resource_number = str(len(existing_resources) + 1)
-        
-        title = request.form.get('title')
-        type = request.form.get('type', '')
-        is_edit = request.form.get('is_edit') == 'true'
-
-        file_path = None
-        if 'resource_file' in request.files and request.files['resource_file'].filename:
-            file = request.files['resource_file']
-            if file and allowed_file(file.filename):
-                filename = secure_filename(f"resource_{resource_number}.{file.filename.rsplit('.', 1)[1]}")
-                filepath = os.path.join(RESOURCES_UPLOAD_FOLDER, filename)
-                file.save(filepath)
-                file_path = f"/static/resources/{filename}"
-
-        # Process sections
-        sections = []
-        section_index = 0
-        while f'section_{section_index}_heading' in request.form:
-            section = {
-                'heading': request.form.get(f'section_{section_index}_heading', ''),
-                'body': request.form.get(f'section_{section_index}_body', '')
-            }
+        # Handle JSON request
+        if request.is_json:
+            req_data = request.get_json()
             
-            # Handle section image
-            if f'section_{section_index}_image' in request.files and request.files[f'section_{section_index}_image'].filename:
-                file = request.files[f'section_{section_index}_image']
+            if not all(field in req_data for field in ['title', 'link', 'type']):
+                return jsonify({"error": "Missing required fields"}), 400
+
+            is_edit = req_data.get('is_edit') == 'true'
+            
+            # Generate automatic resource number or use existing one
+            with open(RESOURCES_DIR_FILE, 'r') as f:
+                data = json.load(f)
+            existing_resources = data.get('resources', [])
+            
+            if is_edit and 'resource_number' in req_data:
+                resource_number = req_data['resource_number']
+            else:
+                resource_number = str(len(existing_resources) + 1)
+            
+            resource_data = {
+                'resource_number': resource_number,
+                'title': req_data.get('title'),
+                'type': req_data.get('type'),
+                'description': req_data.get('description', ''),
+                'link': req_data.get('link'),
+                'upload_date': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            }
+
+            update_directory(RESOURCES_DIR_FILE, 'resources', resource_data, 'resource_number')
+            return jsonify({"message": "Upload successful"}), 200
+        
+        # Legacy FormData handling (keeping for backwards compatibility)
+        else:
+            if not all(field in request.form for field in ['title']):
+                return jsonify({"error": "Missing required fields"}), 400
+
+            # Generate automatic resource number
+            with open(RESOURCES_DIR_FILE, 'r') as f:
+                data = json.load(f)
+            existing_resources = data.get('resources', [])
+            resource_number = str(len(existing_resources) + 1)
+            
+            title = request.form.get('title')
+            type = request.form.get('type', '')
+            is_edit = request.form.get('is_edit') == 'true'
+
+            file_path = None
+            if 'resource_file' in request.files and request.files['resource_file'].filename:
+                file = request.files['resource_file']
                 if file and allowed_file(file.filename):
-                    filename = secure_filename(f"resource_{resource_number}_section_{section_index}.{file.filename.rsplit('.', 1)[1]}")
+                    filename = secure_filename(f"resource_{resource_number}.{file.filename.rsplit('.', 1)[1]}")
                     filepath = os.path.join(RESOURCES_UPLOAD_FOLDER, filename)
                     file.save(filepath)
-                    section['image'] = f"/static/resources/{filename}"
-            elif f'section_{section_index}_existing_image' in request.form and request.form[f'section_{section_index}_existing_image']:
-                section['image'] = request.form[f'section_{section_index}_existing_image']
-            
-            if section['heading'] or section['body'] or section.get('image'):
-                sections.append(section)
-            
-            section_index += 1
+                    file_path = f"/static/resources/{filename}"
 
-        resource_data = {
-            'resource_number': resource_number,
-            'title': title,
-            'type': type,
-            'description': request.form.get('description', ''),
-            'upload_date': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            'file': file_path,
-            'download_size': request.form.get('download_size', ''),
-            'sections': sections
-        }
+            resource_data = {
+                'resource_number': resource_number,
+                'title': title,
+                'type': type,
+                'description': request.form.get('description', ''),
+                'upload_date': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                'file': file_path,
+                'link': request.form.get('link', ''),
+                'download_size': request.form.get('download_size', '')
+            }
 
-        update_directory(RESOURCES_DIR_FILE, 'resources', resource_data, 'resource_number')
-        return jsonify({"message": "Upload successful"}), 200
+            update_directory(RESOURCES_DIR_FILE, 'resources', resource_data, 'resource_number')
+            return jsonify({"message": "Upload successful"}), 200
 
     except Exception as e:
         app.logger.error(f"Upload error: {str(e)}")

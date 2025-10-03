@@ -10,7 +10,6 @@ import Team from './pages/Team';
 import Events from './pages/Events';
 import EventDetail from './pages/EventDetail';
 import Resources from './pages/Resources';
-import ResourceDetail from './pages/ResourceDetail';
 import Gallery from './pages/Gallery';
 import GalleryAlbumDetail from './pages/GalleryAlbumDetail';
 
@@ -37,7 +36,6 @@ function App() {
             <Route path="/events" element={<Events />} />
             <Route path="/events/:eventNumber" element={<EventDetail />} />
             <Route path="/resources" element={<Resources />} />
-            <Route path="/resources/:resourceNumber" element={<ResourceDetail />} />
             <Route path="/gallery" element={<Gallery />} />
             <Route path="/gallery/:albumNumber" element={<GalleryAlbumDetail />} />
             

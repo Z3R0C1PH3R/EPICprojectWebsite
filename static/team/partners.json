@@ -3,7 +3,18 @@
     "id": "1",
     "name": "Agricultural Engineering Institute",
     "description": "Leading research in sustainable irrigation systems and water resource management.",
-    "members": []
+    "members": [
+      {
+        "id": "1dc1016f-cb42-4241-8a39-409c96893463",
+        "name": "1",
+        "role": "3",
+        "department": "45",
+        "bio": "8",
+        "email": "6",
+        "linkedin": "7",
+        "image": "2"
+      }
+    ]
   },
   {
     "id": "2",
