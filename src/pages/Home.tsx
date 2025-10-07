@@ -50,7 +50,7 @@ const Home = () => {
         {/* Background Image */}
         <div className="absolute inset-0">
           <img
-            src="/group.jpg"
+            src="/EPIChomepage.jpg"
             alt="Rice paddy fields"
             className="w-full h-full object-cover"
           />
@@ -61,11 +61,10 @@ const Home = () => {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              EPIC: Equity Perspectives for Irrigation Care or Control
+              EPIC: Equity Perspectives for Irrigation Care or Control?
             </h1>
             <p className="text-xl md:text-2xl mb-8 text-blue-100">
-              Advancing sustainable and equitable irrigation practices through innovative research and community collaboration
-            </p>
+                Creating knowledge and capacity for socially inclusive and ecologically sustainable irrigation water management            </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 to="/about"
@@ -94,6 +93,9 @@ const Home = () => {
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Watch this video to learn more about our research, impact, and the communities we work with.
+            </p>
+            <p className="mt-6 text-lg text-gray-700 max-w-3xl mx-auto">
+              Investments in irrigation are primarily driven by the need to enhance agricultural production and efficiency. Ensuring equity in water access is rarely the focus. Yet, by not explicitly accounting for it, irrigation interventions often increase inequity in access. Project EPIC aims to mainstream the focus on equity in irrigation design and practice by creating new knowledge, tools, and capacity to make irrigation more socially inclusive, ecologically just and sustainable. EPIC is a collaborative initiative across partners representing academic institutions, government and non-government bodies from four countries: India, Tanzania, Ethiopia, and the Netherlands.
             </p>
           </div>
           

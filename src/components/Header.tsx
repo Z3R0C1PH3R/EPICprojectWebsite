@@ -8,10 +8,10 @@ const Header = () => {
 
   const navigation = [
     { name: 'Home', path: '/' },
-    { name: 'About', path: '/about' },
-    { name: 'Case Studies', path: '/case-studies' },
+    { name: 'About', path: '/about' },    
     { name: 'Team', path: '/team' },
-    { name: 'Events', path: '/events' },
+    { name: 'Case Studies', path: '/case-studies' },
+    // { name: 'Events', path: '/events' },
     { name: 'Resources', path: '/resources' },
     { name: 'Gallery', path: '/gallery' },
   ];
