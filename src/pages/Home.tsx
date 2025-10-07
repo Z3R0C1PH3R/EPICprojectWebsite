@@ -50,7 +50,7 @@ const Home = () => {
         {/* Background Image */}
         <div className="absolute inset-0">
           <img
-            src="/Rabi_paddy.jpg"
+            src="/group.jpg"
             alt="Rice paddy fields"
             className="w-full h-full object-cover"
           />
