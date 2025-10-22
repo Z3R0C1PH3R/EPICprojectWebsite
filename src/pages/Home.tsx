@@ -1,13 +1,33 @@
-import React, { useState, useEffect } from 'react';
-import { ChevronRight, Target, Users, Globe, BookOpen, Calendar, FileText, Image, ArrowRight } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ChevronRight, BookOpen, Image, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
+interface Resource {
+  resource_number: string;
+  title: string;
+  type: string;
+  link: string;
+  authors?: string;
+  date?: string;
+}
+
+interface Photo {
+  photo: string;
+  albumNumber: string;
+  albumTitle: string;
+}
+
+interface Album {
+  album_number: string;
+  title: string;
+  photos?: string[];
+}
+
 const Home = () => {
-  const [recentEvents, setRecentEvents] = useState([]);
-  const [recentCaseStudies, setRecentCaseStudies] = useState([]);
-  const [recentAlbums, setRecentAlbums] = useState([]);
+  const [recentResources, setRecentResources] = useState<Resource[]>([]);
+  const [recentPhotos, setRecentPhotos] = useState<Photo[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -16,25 +36,35 @@ const Home = () => {
 
   const fetchRecentContent = async () => {
     try {
-      // Fetch recent events
-      const eventsResponse = await fetch(`${backend_url}/get_events?limit=3`);
-      if (eventsResponse.ok) {
-        const eventsData = await eventsResponse.json();
-        setRecentEvents(eventsData.events || []);
+      // Fetch recent resources
+      const resourcesResponse = await fetch(`${backend_url}/get_resources?limit=3`);
+      if (resourcesResponse.ok) {
+        const resourcesData = await resourcesResponse.json();
+        setRecentResources(resourcesData.resources || []);
       }
 
-      // Fetch recent case studies
-      const caseStudiesResponse = await fetch(`${backend_url}/get_case_studies?limit=3`);
-      if (caseStudiesResponse.ok) {
-        const caseStudiesData = await caseStudiesResponse.json();
-        setRecentCaseStudies(caseStudiesData.case_studies || []);
-      }
-
-      // Fetch recent gallery albums
-      const albumsResponse = await fetch(`${backend_url}/get_photo_albums?limit=3`);
+      // Fetch recent gallery albums to get recent photos
+      const albumsResponse = await fetch(`${backend_url}/get_photo_albums`);
       if (albumsResponse.ok) {
         const albumsData = await albumsResponse.json();
-        setRecentAlbums(albumsData.albums || []);
+        const albums: Album[] = albumsData.albums || [];
+        
+        // Collect all photos from all albums with album info
+        const allPhotos: Photo[] = [];
+        albums.forEach((album) => {
+          if (album.photos && album.photos.length > 0) {
+            album.photos.forEach((photo: string) => {
+              allPhotos.push({
+                photo: photo,
+                albumNumber: album.album_number,
+                albumTitle: album.title
+              });
+            });
+          }
+        });
+        
+        // Get the last 4 photos
+        setRecentPhotos(allPhotos.slice(-4));
       }
     } catch (error) {
       console.error('Error fetching recent content:', error);
@@ -91,11 +121,11 @@ const Home = () => {
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
               About Our Project
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Watch this video to learn more about our research, impact, and the communities we work with.
-            </p>
-            <p className="mt-6 text-lg text-gray-700 max-w-3xl mx-auto">
+            <p className="text-lg text-gray-700 max-w-3xl mx-auto">
               Investments in irrigation are primarily driven by the need to enhance agricultural production and efficiency. Ensuring equity in water access is rarely the focus. Yet, by not explicitly accounting for it, irrigation interventions often increase inequity in access. Project EPIC aims to mainstream the focus on equity in irrigation design and practice by creating new knowledge, tools, and capacity to make irrigation more socially inclusive, ecologically just and sustainable. EPIC is a collaborative initiative across partners representing academic institutions, government and non-government bodies from four countries: India, Tanzania, Ethiopia, and the Netherlands.
+            </p>
+            <p className=" mt-6 text-xl text-gray-600 max-w-3xl mx-auto">
+              Watch this video to learn more about our research, impact, and the communities we work with.
             </p>
           </div>
           
@@ -114,21 +144,117 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Recent Events */}
-      <section className="py-20">
+      {/* Project Partners */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+              Project Partners
+            </h2>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center justify-items-center">
+            {/* Row 1 */}
+            <div className="w-full max-w-[200px] h-32 flex items-center justify-center p-4">
+              <img
+                src="/logos/iitd.svg"
+                alt="IIT Delhi"
+                className="max-w-full max-h-full object-contain"
+              />
+            </div>
+            <div className="w-full max-w-[200px] h-32 flex items-center justify-center p-4">
+              <img
+                src="/logos/ihe-delft.png"
+                alt="IHE Delft"
+                className="max-w-full max-h-full object-contain"
+              />
+            </div>
+            <div className="w-full max-w-[200px] h-32 flex items-center justify-center p-4">
+              <img
+                src="/logos/atree.png"
+                alt="ATREE"
+                className="max-w-full max-h-full object-contain"
+              />
+            </div>
+            <div className="w-full max-w-[200px] h-32 flex items-center justify-center p-4">
+              <img
+                src="/logos/fes.svg"
+                alt="FES"
+                className="max-w-full max-h-full object-contain"
+              />
+            </div>
+            
+            {/* Row 2 */}
+            <div className="w-full max-w-[200px] h-32 flex items-center justify-center p-4">
+              <img
+                src="/logos/nmaist.png"
+                alt="NMAIST"
+                className="max-w-full max-h-full object-contain"
+              />
+            </div>
+            <div className="w-full max-w-[200px] h-32 flex items-center justify-center p-4">
+              <img
+                src="/logos/pangani.png"
+                alt="Pangani Basin Water Board"
+                className="max-w-full max-h-full object-contain"
+              />
+            </div>
+            <div className="w-full max-w-[200px] h-32 flex items-center justify-center p-4">
+              <img
+                src="/logos/wollo.png"
+                alt="Wollo University"
+                className="max-w-full max-h-full object-contain"
+              />
+            </div>
+            <div className="w-full max-w-[200px] h-32 flex items-center justify-center p-4">
+              <img
+                src="/logos/wodet.png"
+                alt="WoDET"
+                className="max-w-full max-h-full object-contain"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Our Funders */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+              Our Funders
+            </h2>
+            <p className="text-lg text-gray-700 max-w-3xl mx-auto mb-8">
+              Project EPIC is supported by the IHE Delft Water and Development Partnership Programme, financed by the Dutch Ministry of Foreign Affairs
+            </p>
+            <div className="flex justify-center">
+              <div className="w-full max-w-[300px] h-40 flex items-center justify-center">
+                <img
+                  src="/logos/dutch-ministry.png"
+                  alt="Dutch Ministry of Foreign Affairs"
+                  className="max-w-full max-h-full object-contain"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Recent Project Outputs */}
+      <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-12">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">Recent Events</h2>
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">Recent Project Outputs</h2>
               <p className="text-lg text-gray-600">
-                Stay updated with our latest workshops, conferences, and community engagement activities.
+                Explore our recent blogs and academic writings
               </p>
             </div>
             <Link
-              to="/events"
+              to="/resources"
               className="flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
-              View All Events
+              View All Outputs
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </div>
@@ -136,127 +262,56 @@ const Home = () => {
           {loading ? (
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="mt-4 text-gray-600">Loading recent events...</p>
+              <p className="mt-4 text-gray-600">Loading recent outputs...</p>
             </div>
-          ) : recentEvents.length > 0 ? (
+          ) : recentResources.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {recentEvents.map((event) => (
-                <Link
-                  key={event.event_number}
-                  to={`/events/${event.event_number}`}
-                  className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
+              {recentResources.map((resource) => (
+                <a
+                  key={resource.resource_number}
+                  href={resource.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow p-6"
                 >
-                  {event.cover_image && (
-                    <div className="h-48 bg-gray-200">
-                      <img
-                        src={event.cover_image}
-                        alt={event.title}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  )}
-                  <div className="p-6">
-                    <div className="flex items-center text-sm text-gray-500 mb-2">
-                      <Calendar className="h-4 w-4 mr-1" />
-                      {event.date}
-                    </div>
-                    <h3 className="text-xl font-semibold mb-2 text-gray-900">{event.title}</h3>
-                    <p className="text-gray-600 mb-4 line-clamp-2">{event.description}</p>
-                    {event.location && (
-                      <p className="text-sm text-gray-500">{event.location}</p>
-                    )}
+                  <div className="flex items-center text-sm text-gray-500 mb-2">
+                    <BookOpen className="h-4 w-4 mr-1" />
+                    {resource.type}
                   </div>
-                </Link>
+                  <h3 className="text-xl font-semibold mb-2 text-gray-900">{resource.title}</h3>
+                  {resource.authors && (
+                    <p className="text-sm text-gray-600 mb-2">By: {resource.authors}</p>
+                  )}
+                  {resource.date && (
+                    <p className="text-sm text-gray-500">{resource.date}</p>
+                  )}
+                </a>
               ))}
             </div>
           ) : (
             <div className="text-center py-12 text-gray-500">
-              <Calendar className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-              <p>No recent events available.</p>
+              <BookOpen className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+              <p>No recent outputs available.</p>
             </div>
           )}
         </div>
       </section>
 
-      {/* Recent Case Studies */}
+      {/* Recent Gallery Photos */}
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-12">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">Recent Case Studies</h2>
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">Recent Gallery Photos</h2>
               <p className="text-lg text-gray-600">
-                Explore our latest research findings and real-world irrigation solutions.
-              </p>
-            </div>
-            <Link
-              to="/case-studies"
-              className="flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              View All Case Studies
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
-          </div>
-
-          {loading ? (
-            <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="mt-4 text-gray-600">Loading recent case studies...</p>
-            </div>
-          ) : recentCaseStudies.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {recentCaseStudies.map((caseStudy) => (
-                <Link
-                  key={caseStudy.case_study_number}
-                  to={`/case-studies/${caseStudy.case_study_number}`}
-                  className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
-                >
-                  {caseStudy.cover_image && (
-                    <div className="h-48 bg-gray-200">
-                      <img
-                        src={caseStudy.cover_image}
-                        alt={caseStudy.title}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  )}
-                  <div className="p-6">
-                    <div className="flex items-center text-sm text-gray-500 mb-2">
-                      <FileText className="h-4 w-4 mr-1" />
-                      Case Study
-                    </div>
-                    <h3 className="text-xl font-semibold mb-2 text-gray-900">{caseStudy.title}</h3>
-                    <p className="text-gray-600 mb-4 line-clamp-2">{caseStudy.description}</p>
-                    {caseStudy.location && (
-                      <p className="text-sm text-gray-500">{caseStudy.location}</p>
-                    )}
-                  </div>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12 text-gray-500">
-              <FileText className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-              <p>No recent case studies available.</p>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Recent Gallery Albums */}
-      <section className="py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-12">
-            <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">Recent Gallery Albums</h2>
-              <p className="text-lg text-gray-600">
-                Visual stories from our field research, community visits, and project activities.
+                Visuals from our field sites and project activities
               </p>
             </div>
             <Link
               to="/gallery"
               className="flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
-              View All Albums
+              View Gallery
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </div>
@@ -264,35 +319,25 @@ const Home = () => {
           {loading ? (
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="mt-4 text-gray-600">Loading recent albums...</p>
+              <p className="mt-4 text-gray-600">Loading recent photos...</p>
             </div>
-          ) : recentAlbums.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {recentAlbums.map((album) => (
+          ) : recentPhotos.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {recentPhotos.map((item, index) => (
                 <Link
-                  key={album.album_number}
-                  to={`/gallery/${album.album_number}`}
-                  className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
+                  key={index}
+                  to={`/gallery/${item.albumNumber}`}
+                  className="group relative aspect-square overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow"
                 >
-                  {album.cover_image && (
-                    <div className="h-48 bg-gray-200">
-                      <img
-                        src={album.cover_image}
-                        alt={album.title}
-                        className="w-full h-full object-cover"
-                      />
+                  <img
+                    src={item.photo}
+                    alt={`Photo from ${item.albumTitle}`}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="absolute bottom-0 left-0 right-0 p-3">
+                      <p className="text-white text-sm font-medium line-clamp-2">{item.albumTitle}</p>
                     </div>
-                  )}
-                  <div className="p-6">
-                    <div className="flex items-center text-sm text-gray-500 mb-2">
-                      <Image className="h-4 w-4 mr-1" />
-                      Album
-                    </div>
-                    <h3 className="text-xl font-semibold mb-2 text-gray-900">{album.title}</h3>
-                    <p className="text-gray-600 mb-4 line-clamp-2">{album.description}</p>
-                    {album.photo_count && (
-                      <p className="text-sm text-gray-500">{album.photo_count} photos</p>
-                    )}
                   </div>
                 </Link>
               ))}
@@ -300,7 +345,7 @@ const Home = () => {
           ) : (
             <div className="text-center py-12 text-gray-500">
               <Image className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-              <p>No recent albums available.</p>
+              <p>No recent photos available.</p>
             </div>
           )}
         </div>

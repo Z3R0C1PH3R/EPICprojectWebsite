@@ -4,33 +4,29 @@ const Footer = () => {
   return (
     <footer className="bg-gray-800 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center space-x-2 mb-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
+            <div className="flex items-center space-x-3 mb-4">
               <img 
                 src="/logo.png" 
                 alt="EPIC Logo" 
-                className="h-10 w-auto"
+                className="h-16 w-auto"
               />
               <div>
-                <span className="text-xl font-bold">EPIC</span>
-                <p className="text-sm text-gray-300">Equity Perspectives for Irrigation Care or Control</p>
+                <span className="text-3xl font-bold">EPIC</span>
+                <p className="text-base text-gray-300">Equity Perspectives for Irrigation Care or Control</p>
               </div>
             </div>
-            <p className="text-gray-300 mb-4">
-              A comprehensive academic research project focused on sustainable and equitable irrigation practices 
-              for agricultural development and water resource management.
-            </p>
           </div>
 
-          <div>
-            <h3 className="text-lg text-right font-semibold mb-4">Quick Links</h3>
-            <ul className="space-y-2 text-sm text-right text-gray-300">
-              <li><a href="/team" className="hover:text-white">Team</a></li>
-              <li><a href="/resources" className="hover:text-white">Resources</a></li>
-              <li><a href="/gallery" className="hover:text-white">Gallery</a></li>
-              <li><a href="/admin" className="hover:text-white">Admin</a></li>
-            </ul>
+          <div className="text-gray-300">
+            <h3 className="text-lg text-right font-semibold mb-2">Contact</h3>
+            <div className="text-right">
+              <p className="mb-1">Prof. Pooja Prasad</p>
+              <p className="mb-1">School of Public Policy, IIT Delhi</p>
+              <p className="mb-1">Hauz Khas, New Delhi 110016</p>
+              <p>Email: <a href="mailto:p_pooja@iitd.ac.in" className="hover:text-white underline">p_pooja@iitd.ac.in</a></p>
+            </div>
           </div>
         </div>
         

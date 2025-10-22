@@ -7,6 +7,14 @@
       "description": "Something cool",
       "link": "https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ&start_radio=1&pp=ygUJcmljayByb2xsoAcB",
       "upload_date": "2025-10-03 17:25:02"
+    },
+    {
+      "resource_number": "2",
+      "title": "TItie",
+      "type": "Conference Papers",
+      "description": "onekldnf",
+      "link": "https://abc.com",
+      "upload_date": "2025-10-04 14:47:56"
     }
   ]
 }

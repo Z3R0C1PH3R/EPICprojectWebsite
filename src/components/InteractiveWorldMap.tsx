@@ -97,10 +97,10 @@ const InteractiveWorldMap = () => {
 
   const locations: Location[] = [
     {
-      id: 'delhi',
-      name: 'Delhi, India',
-      lat: 28.6139,
-      lng: 77.2090,
+      id: 'gaya',
+      name: 'Gaya, India',
+      lat: 24.7914,
+      lng: 85.0002,
       caseStudyId: '1'
     },
     {
@@ -109,6 +109,13 @@ const InteractiveWorldMap = () => {
       lat: 19.0760,
       lng: 72.8777,
       caseStudyId: '2'
+    },
+    {
+      id: 'southafrica',
+      name: 'Pretoria, South Africa',
+      lat: -25.7579,
+      lng: 28.2293,
+      caseStudyId: '3'
     },
     {
       id: 'southafrica',
