@@ -550,22 +550,38 @@ def add_team_member():
         import uuid
         partner_id = request.form.get('partner_id')
         name = request.form.get('name')
+        designation = request.form.get('designation', '')
         role = request.form.get('role')
-        department = request.form.get('department')
+        department = request.form.get('department', '')
         bio = request.form.get('bio')
-        email = request.form.get('email')
-        linkedin = request.form.get('linkedin')
-        image = request.form.get('image')
+        email = request.form.get('email', '')
+        linkedin = request.form.get('linkedin', '')
+        twitter = request.form.get('twitter', '')
+        webpage = request.form.get('webpage', '')
+        
+        # Handle photo upload
+        image_path = ''
+        if 'photo' in request.files and request.files['photo'].filename:
+            file = request.files['photo']
+            if file and allowed_file(file.filename):
+                member_id = str(uuid.uuid4())
+                filename = secure_filename(f"team_member_{member_id}.{file.filename.rsplit('.', 1)[1]}")
+                filepath = os.path.join('static/team', filename)
+                file.save(filepath)
+                image_path = f"/static/team/{filename}"
         
         new_member = {
-            'id': str(uuid.uuid4()),
+            'id': member_id if 'photo' in request.files else str(uuid.uuid4()),
             'name': name,
+            'designation': designation,
             'role': role,
             'department': department,
             'bio': bio,
             'email': email,
             'linkedin': linkedin,
-            'image': image
+            'twitter': twitter,
+            'webpage': webpage,
+            'image': image_path
         }
         
         with open(TEAM_DIR_FILE, 'r') as f:
@@ -589,12 +605,24 @@ def update_team_member():
         partner_id = request.form.get('partner_id')
         member_id = request.form.get('member_id')
         name = request.form.get('name')
+        designation = request.form.get('designation', '')
         role = request.form.get('role')
-        department = request.form.get('department')
+        department = request.form.get('department', '')
         bio = request.form.get('bio')
-        email = request.form.get('email')
-        linkedin = request.form.get('linkedin')
-        image = request.form.get('image')
+        email = request.form.get('email', '')
+        linkedin = request.form.get('linkedin', '')
+        twitter = request.form.get('twitter', '')
+        webpage = request.form.get('webpage', '')
+        
+        # Handle photo upload
+        image_path = request.form.get('existing_image', '')
+        if 'photo' in request.files and request.files['photo'].filename:
+            file = request.files['photo']
+            if file and allowed_file(file.filename):
+                filename = secure_filename(f"team_member_{member_id}.{file.filename.rsplit('.', 1)[1]}")
+                filepath = os.path.join('static/team', filename)
+                file.save(filepath)
+                image_path = f"/static/team/{filename}"
         
         with open(TEAM_DIR_FILE, 'r') as f:
             partners = json.load(f)
@@ -604,12 +632,15 @@ def update_team_member():
                 for member in partner['members']:
                     if member['id'] == member_id:
                         member['name'] = name
+                        member['designation'] = designation
                         member['role'] = role
                         member['department'] = department
                         member['bio'] = bio
                         member['email'] = email
                         member['linkedin'] = linkedin
-                        member['image'] = image
+                        member['twitter'] = twitter
+                        member['webpage'] = webpage
+                        member['image'] = image_path
                         break
                 break
         

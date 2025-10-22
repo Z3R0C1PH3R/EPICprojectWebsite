@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, Edit, Trash2, Save, X, Users, Building } from 'lucide-react';
 
@@ -7,12 +7,15 @@ const backend_url = import.meta.env.VITE_BACKEND_URL;
 interface TeamMember {
   id: string;
   name: string;
+  designation?: string;
   role: string;
-  department: string;
+  department?: string;
   bio: string;
-  email: string;
-  linkedin: string;
-  image: string;
+  email?: string;
+  linkedin?: string;
+  twitter?: string;
+  webpage?: string;
+  image?: string;
 }
 
 interface Partner {
@@ -77,9 +80,11 @@ const TeamAdmin = () => {
   const [editingMember, setEditingMember] = useState<{ partnerId: string; memberId: string } | null>(null);
   const [editingPartner, setEditingPartner] = useState<string | null>(null);
   const [newMember, setNewMember] = useState<Partial<TeamMember>>({});
-  const [newPartner, setNewPartner] = useState<Partial<Partner>>({});
   const [showAddMember, setShowAddMember] = useState<string | null>(null);
-  const [showAddPartner, setShowAddPartner] = useState(false);
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [editPhotoFile, setEditPhotoFile] = useState<File | null>(null);
+  const [editPhotoPreview, setEditPhotoPreview] = useState<string | null>(null);
 
   useEffect(() => {
     fetchPartners();
@@ -94,6 +99,34 @@ const TeamAdmin = () => {
       }
     } catch (error) {
       console.error('Error fetching partners:', error);
+    }
+  };
+
+  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      setPhotoFile(file);
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhotoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleEditPhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      setEditPhotoFile(file);
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setEditPhotoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -134,12 +167,24 @@ const TeamAdmin = () => {
       formData.append('partner_id', partnerId);
       formData.append('member_id', memberId);
       formData.append('name', member.name);
+      formData.append('designation', member.designation || '');
       formData.append('role', member.role);
-      formData.append('department', member.department);
+      formData.append('department', member.department || '');
       formData.append('bio', member.bio);
-      formData.append('email', member.email);
-      formData.append('linkedin', member.linkedin);
-      formData.append('image', member.image);
+      formData.append('email', member.email || '');
+      formData.append('linkedin', member.linkedin || '');
+      formData.append('twitter', member.twitter || '');
+      formData.append('webpage', member.webpage || '');
+      
+      // Add existing image path if no new photo
+      if (!editPhotoFile && member.image) {
+        formData.append('existing_image', member.image);
+      }
+      
+      // Add new photo if selected
+      if (editPhotoFile) {
+        formData.append('photo', editPhotoFile);
+      }
 
       const response = await fetch(`${backend_url}/update_team_member`, {
         method: 'POST',
@@ -148,6 +193,8 @@ const TeamAdmin = () => {
 
       if (response.ok) {
         setEditingMember(null);
+        setEditPhotoFile(null);
+        setEditPhotoPreview(null);
         fetchPartners();
       } else {
         alert('Error updating team member');
@@ -163,12 +210,19 @@ const TeamAdmin = () => {
       const formData = new FormData();
       formData.append('partner_id', partnerId);
       formData.append('name', newMember.name || '');
+      formData.append('designation', newMember.designation || '');
       formData.append('role', newMember.role || '');
       formData.append('department', newMember.department || '');
       formData.append('bio', newMember.bio || '');
       formData.append('email', newMember.email || '');
       formData.append('linkedin', newMember.linkedin || '');
-      formData.append('image', newMember.image || 'Team Member Photo');
+      formData.append('twitter', newMember.twitter || '');
+      formData.append('webpage', newMember.webpage || '');
+      
+      // Add photo file if selected
+      if (photoFile) {
+        formData.append('photo', photoFile);
+      }
 
       const response = await fetch(`${backend_url}/add_team_member`, {
         method: 'POST',
@@ -178,6 +232,8 @@ const TeamAdmin = () => {
       if (response.ok) {
         setShowAddMember(null);
         setNewMember({});
+        setPhotoFile(null);
+        setPhotoPreview(null);
         fetchPartners();
       } else {
         alert('Error adding team member');
@@ -331,20 +387,57 @@ const TeamAdmin = () => {
                     className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4"
                   >
                     <h4 className="font-semibold mb-3">Add New Team Member</h4>
+                    
+                    {/* Photo Upload */}
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Photo Upload
+                      </label>
+                      <div className="flex items-center gap-4">
+                        {photoPreview && (
+                          <div className="w-24 h-24 rounded-lg overflow-hidden border border-gray-300">
+                            <img 
+                              src={photoPreview} 
+                              alt="Preview" 
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        )}
+                        <div className="flex-1">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handlePhotoSelect}
+                            className="border border-gray-300 rounded px-3 py-2 w-full"
+                          />
+                          <p className="text-xs text-gray-500 mt-1">Upload a photo for the team member</p>
+                        </div>
+                      </div>
+                    </div>
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <input
                         type="text"
-                        placeholder="Name"
+                        placeholder="Name *"
                         value={newMember.name || ''}
                         onChange={(e) => setNewMember({ ...newMember, name: e.target.value })}
+                        className="border border-gray-300 rounded px-3 py-2"
+                        required
+                      />
+                      <input
+                        type="text"
+                        placeholder="Designation"
+                        value={newMember.designation || ''}
+                        onChange={(e) => setNewMember({ ...newMember, designation: e.target.value })}
                         className="border border-gray-300 rounded px-3 py-2"
                       />
                       <input
                         type="text"
-                        placeholder="Role"
+                        placeholder="Role in EPIC *"
                         value={newMember.role || ''}
                         onChange={(e) => setNewMember({ ...newMember, role: e.target.value })}
                         className="border border-gray-300 rounded px-3 py-2"
+                        required
                       />
                       <input
                         type="text"
@@ -361,27 +454,36 @@ const TeamAdmin = () => {
                         className="border border-gray-300 rounded px-3 py-2"
                       />
                       <input
-                        type="text"
+                        type="url"
+                        placeholder="Webpage URL"
+                        value={newMember.webpage || ''}
+                        onChange={(e) => setNewMember({ ...newMember, webpage: e.target.value })}
+                        className="border border-gray-300 rounded px-3 py-2"
+                      />
+                      <input
+                        type="url"
                         placeholder="LinkedIn URL"
                         value={newMember.linkedin || ''}
                         onChange={(e) => setNewMember({ ...newMember, linkedin: e.target.value })}
                         className="border border-gray-300 rounded px-3 py-2"
                       />
                       <input
-                        type="text"
-                        placeholder="Image (URL or description)"
-                        value={newMember.image || ''}
-                        onChange={(e) => setNewMember({ ...newMember, image: e.target.value })}
+                        type="url"
+                        placeholder="Twitter/X URL"
+                        value={newMember.twitter || ''}
+                        onChange={(e) => setNewMember({ ...newMember, twitter: e.target.value })}
                         className="border border-gray-300 rounded px-3 py-2"
                       />
                     </div>
                     <textarea
-                      placeholder="Bio"
+                      placeholder="Bio *"
                       value={newMember.bio || ''}
                       onChange={(e) => setNewMember({ ...newMember, bio: e.target.value })}
                       className="border border-gray-300 rounded px-3 py-2 mt-4 w-full"
-                      rows={3}
+                      rows={4}
+                      required
                     />
+                    <p className="text-sm text-gray-500 mt-2">* Required fields</p>
                     <div className="flex gap-2 mt-4">
                       <button
                         onClick={() => handleAddMember(partner.id)}
@@ -393,6 +495,8 @@ const TeamAdmin = () => {
                         onClick={() => {
                           setShowAddMember(null);
                           setNewMember({});
+                          setPhotoFile(null);
+                          setPhotoPreview(null);
                         }}
                         className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
                       >
@@ -408,25 +512,60 @@ const TeamAdmin = () => {
                     <div key={member.id} className="border border-gray-200 rounded-lg p-4">
                       {editingMember?.partnerId === partner.id && editingMember?.memberId === member.id ? (
                         <div className="space-y-3">
+                          {/* Photo Upload for Edit */}
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Photo
+                            </label>
+                            <div className="flex items-center gap-2 mb-2">
+                              {(editPhotoPreview || member.image) && (
+                                <div className="w-16 h-16 rounded overflow-hidden border border-gray-300">
+                                  <img 
+                                    src={editPhotoPreview || `${backend_url}${member.image}`} 
+                                    alt="Preview" 
+                                    className="w-full h-full object-cover"
+                                  />
+                                </div>
+                              )}
+                              <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleEditPhotoSelect}
+                                className="text-sm border border-gray-300 rounded px-2 py-1 flex-1"
+                              />
+                            </div>
+                          </div>
+                          
                           <input
                             type="text"
+                            placeholder="Name *"
                             value={member.name}
                             onChange={(e) => updateMember(partner.id, member.id, 'name', e.target.value)}
                             className="font-semibold border border-gray-300 rounded px-2 py-1 w-full"
                           />
                           <input
                             type="text"
+                            placeholder="Designation"
+                            value={member.designation || ''}
+                            onChange={(e) => updateMember(partner.id, member.id, 'designation', e.target.value)}
+                            className="text-gray-700 border border-gray-300 rounded px-2 py-1 w-full"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Role in EPIC *"
                             value={member.role}
                             onChange={(e) => updateMember(partner.id, member.id, 'role', e.target.value)}
                             className="text-blue-600 border border-gray-300 rounded px-2 py-1 w-full"
                           />
                           <input
                             type="text"
-                            value={member.department}
+                            placeholder="Department"
+                            value={member.department || ''}
                             onChange={(e) => updateMember(partner.id, member.id, 'department', e.target.value)}
                             className="text-gray-600 text-sm border border-gray-300 rounded px-2 py-1 w-full"
                           />
                           <textarea
+                            placeholder="Bio *"
                             value={member.bio}
                             onChange={(e) => updateMember(partner.id, member.id, 'bio', e.target.value)}
                             className="text-gray-600 border border-gray-300 rounded px-2 py-1 w-full"
@@ -434,14 +573,30 @@ const TeamAdmin = () => {
                           />
                           <input
                             type="email"
-                            value={member.email}
+                            placeholder="Email"
+                            value={member.email || ''}
                             onChange={(e) => updateMember(partner.id, member.id, 'email', e.target.value)}
                             className="text-gray-600 border border-gray-300 rounded px-2 py-1 w-full"
                           />
                           <input
-                            type="text"
-                            value={member.linkedin}
+                            type="url"
+                            placeholder="Webpage URL"
+                            value={member.webpage || ''}
+                            onChange={(e) => updateMember(partner.id, member.id, 'webpage', e.target.value)}
+                            className="text-gray-600 border border-gray-300 rounded px-2 py-1 w-full"
+                          />
+                          <input
+                            type="url"
+                            placeholder="LinkedIn URL"
+                            value={member.linkedin || ''}
                             onChange={(e) => updateMember(partner.id, member.id, 'linkedin', e.target.value)}
+                            className="text-gray-600 border border-gray-300 rounded px-2 py-1 w-full"
+                          />
+                          <input
+                            type="url"
+                            placeholder="Twitter/X URL"
+                            value={member.twitter || ''}
+                            onChange={(e) => updateMember(partner.id, member.id, 'twitter', e.target.value)}
                             className="text-gray-600 border border-gray-300 rounded px-2 py-1 w-full"
                           />
                           <div className="flex gap-2">
@@ -452,7 +607,11 @@ const TeamAdmin = () => {
                               Save
                             </button>
                             <button
-                              onClick={() => setEditingMember(null)}
+                              onClick={() => {
+                                setEditingMember(null);
+                                setEditPhotoFile(null);
+                                setEditPhotoPreview(null);
+                              }}
                               className="flex-1 px-3 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
                             >
                               Cancel
@@ -464,8 +623,13 @@ const TeamAdmin = () => {
                           <div className="flex justify-between items-start mb-3">
                             <div>
                               <h4 className="font-semibold">{member.name}</h4>
+                              {member.designation && (
+                                <p className="text-gray-700 text-sm">{member.designation}</p>
+                              )}
                               <p className="text-blue-600 text-sm">{member.role}</p>
-                              <p className="text-gray-600 text-sm">{member.department}</p>
+                              {member.department && (
+                                <p className="text-gray-600 text-sm">{member.department}</p>
+                              )}
                             </div>
                             <div className="flex gap-1">
                               <button

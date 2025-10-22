@@ -5,6 +5,12 @@ import { ArrowLeft, Calendar, MapPin, Download } from 'lucide-react';
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
+interface CaseStudySection {
+  heading: string;
+  body: string;
+  image?: string;
+}
+
 interface CaseStudy {
   case_study_number: string;
   title: string;
@@ -15,6 +21,7 @@ interface CaseStudy {
   cover_image: string;
   pdf_file: string;
   upload_date: string;
+  sections?: CaseStudySection[];
 }
 
 export default function CaseStudyDetail() {
@@ -39,8 +46,8 @@ export default function CaseStudyDetail() {
           throw new Error(`Case Study #${caseStudyNumber} not found`);
         }
         setCaseStudy(foundCaseStudy);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
         setLoading(false);
       }
@@ -143,6 +150,37 @@ export default function CaseStudyDetail() {
                 </p>
               </div>
             </div>
+
+            {/* Sections */}
+            {caseStudy.sections && caseStudy.sections.length > 0 && (
+              <div className="mb-12 space-y-8">
+                {caseStudy.sections.map((section, index) => (
+                  <div key={index} className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                    {section.image && (
+                      <div className="w-full h-64 overflow-hidden">
+                        <img
+                          src={`${backend_url}${section.image}`}
+                          alt={section.heading}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+                    <div className="p-6">
+                      {section.heading && (
+                        <h3 className="text-2xl font-bold text-gray-900 mb-4">{section.heading}</h3>
+                      )}
+                      {section.body && (
+                        <div className="prose prose-lg max-w-none">
+                          <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                            {section.body}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
 
             {/* Download Section */}
             {caseStudy.pdf_file && (

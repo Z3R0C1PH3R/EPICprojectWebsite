@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Calendar, MapPin, Download, ExternalLink } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import CaseStudiesMap from '../components/CaseStudiesMap';
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
@@ -47,19 +48,41 @@ const CaseStudies = () => {
   return (
     <div className="bg-white min-h-screen">
       {/* Header */}
-      <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20 overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <img
+            src="/case-study-bg.jpg"
+            alt="Case Studies"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-blue-800/60" />
+        </div>
+        
+        {/* Content */}
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">Case Studies</h1>
             <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-              Explore our comprehensive research on irrigation practices, water management, and 
-              community development across diverse geographical and cultural contexts.
+              Project EPIC explores grounded ideas of equity through case studies in three different countries. Find more details about our case studies here.
             </p>
           </div>
         </div>
       </section>
 
-      {/* Case Studies Grid */}
+          {/* Our Case Study Locations */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Case Study Locations</h2>
+            <p className="text-lg text-gray-600 max-w-4xl mx-auto mb-8">
+              Explore our research sites across India, Tanzania, and Ethiopia. Click on each location to learn more about the specific case study.
+            </p>
+          </div>
+          
+          <CaseStudiesMap />
+        </div>
+      </section>      {/* Case Studies Grid */}
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

@@ -32,6 +32,12 @@ export interface Album {
   photos: string[];
 }
 
+export interface CaseStudySection {
+  heading: string;
+  body: string;
+  image?: string;
+}
+
 export interface CaseStudy {
   case_study_number: string;
   title: string;
@@ -42,4 +48,26 @@ export interface CaseStudy {
   cover_image?: string;
   pdf_file?: string;
   upload_date: string;
+  sections?: CaseStudySection[];
+}
+
+export interface TeamMember {
+  id: string;
+  name: string;
+  designation?: string;
+  role: string;
+  department?: string;
+  bio: string;
+  email?: string;
+  linkedin?: string;
+  twitter?: string;
+  webpage?: string;
+  image?: string;
+}
+
+export interface Partner {
+  id: string;
+  name: string;
+  description: string;
+  members: TeamMember[];
 }
