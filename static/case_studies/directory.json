@@ -2,12 +2,12 @@
   "case_studies": [
     {
       "case_study_number": "1",
-      "title": "Gaya Case Study",
+      "title": "Indigenous and modern irrigation systems in Gaya",
       "location": "Bishunganj Village, Chandauti Block, Gaya District, Bihar",
       "date": "2025-08-17",
       "category": "",
       "upload_date": "2025-08-18 02:49:45",
-      "cover_image": "/static/case_studies/case_study_1_cover.jpg",
+      "cover_image": null,
       "pdf_file": null,
       "description": "Bishunganj is a village located in Chandauti Block, within the Gaya district of Bihar. The region lies in the Ganga River Basin, specifically in the upper reaches of the Falgu sub-basin, and falls under the semi-arid agro-climatic zone. Agriculture is the predominant livelihood, with water-intensive crops like paddy heavily dependent on irrigation.\r\nThe Ahar-Pyne system is an indigenous irrigation technology practiced since 5000 years ago.  It was a well managed irrigation system of Magadh Kingdom. It still continues to irrigate substantial areas in the South Bihar plains (that includes Gaya) of India.  The water reservoir created by the embankment is called ahar while the drainage channels carrying the water to or away from it are called pynes. While these systems still exist, they now operate alongside and in competition with private borewells and electric/diesel pump-based irrigation, creating complex interactions between individual and community based irrigation systems. \r\n",
       "sections": [
@@ -23,7 +23,7 @@
     },
     {
       "case_study_number": "2",
-      "title": "Andhra Pradesh Case study",
+      "title": "Andhra Pradesh Case study MEOW",
       "location": "Andhra Pradesh, India",
       "date": "2025-08-17",
       "category": "",

@@ -9,6 +9,7 @@ interface Resource {
   type: string;
   description: string;
   link: string;
+  thumbnail?: string;
 }
 
 const Resources = () => {
@@ -57,17 +58,39 @@ const Resources = () => {
   return (
     <div className="bg-white min-h-screen">
       {/* Header */}
+      <section className="relative bg-gradient-to-r from-blue-600 to-blue-800 text-white py-40 overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <img
+            src="/resources-bg.jpg"
+            alt="Case Studies"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-blue-800/60" />
+        </div>
+        
+        {/* Content */}
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6">Project Output</h1>
+            <p className="text-xl text-blue-100 max-w-3xl mx-auto">
+              Access our comprehensive collection of guides, research papers, training materials, 
+              and tools to support sustainable irrigation practices and water management.            </p>
+          </div>
+        </div>
+      </section>
+      {/* Header
       <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">Resources</h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-6">Project Output</h1>
             <p className="text-xl text-blue-100 max-w-3xl mx-auto">
               Access our comprehensive collection of guides, research papers, training materials, 
               and tools to support sustainable irrigation practices and water management.
             </p>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Search and Filter */}
       <section className="py-8 bg-gray-50">
@@ -117,40 +140,56 @@ const Resources = () => {
                   href={resource.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg hover:border-blue-300 transition-all group"
+                  className="block bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg hover:border-blue-300 transition-all group"
                 >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-start gap-4 mb-3">
-                        <div className="flex-shrink-0 mt-1">
-                          {resource.type === 'Journal Articles' ? (
-                            <FileText className="h-6 w-6 text-blue-600" />
-                          ) : resource.type === 'Conference Papers' ? (
-                            <BookOpen className="h-6 w-6 text-green-600" />
-                          ) : resource.type === 'Masters Thesis' ? (
-                            <FileText className="h-6 w-6 text-purple-600" />
-                          ) : resource.type === 'Blog Posts' ? (
-                            <Video className="h-6 w-6 text-orange-600" />
-                          ) : (
-                            <BookOpen className="h-6 w-6 text-gray-600" />
+                  <div className="flex items-start">
+                    {/* Thumbnail */}
+                    {resource.thumbnail && (
+                      <div className="flex-shrink-0 w-48 h-48">
+                        <img
+                          src={`${backend_url}${resource.thumbnail}`}
+                          alt={resource.title}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+                    
+                    {/* Content */}
+                    <div className="flex-1 p-6">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-start gap-4 mb-3">
+                            <div className="flex-shrink-0 mt-1">
+                              {resource.type === 'Journal Articles' ? (
+                                <FileText className="h-6 w-6 text-blue-600" />
+                              ) : resource.type === 'Conference Papers' ? (
+                                <BookOpen className="h-6 w-6 text-green-600" />
+                              ) : resource.type === 'Masters Thesis' ? (
+                                <FileText className="h-6 w-6 text-purple-600" />
+                              ) : resource.type === 'Blog Posts' ? (
+                                <Video className="h-6 w-6 text-orange-600" />
+                              ) : (
+                                <BookOpen className="h-6 w-6 text-gray-600" />
+                              )}
+                            </div>
+                            <div className="flex-1">
+                              <div className="flex items-start justify-between gap-4">
+                                <h3 className="text-xl font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                  {resource.title}
+                                </h3>
+                                <ExternalLink className="h-5 w-5 text-gray-400 group-hover:text-blue-600 flex-shrink-0 transition-colors" />
+                              </div>
+                              <span className="inline-block text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full mt-2">
+                                {resource.type}
+                              </span>
+                            </div>
+                          </div>
+                          
+                          {resource.description && (
+                            <p className="text-gray-600 leading-relaxed ml-10">{resource.description}</p>
                           )}
                         </div>
-                        <div className="flex-1">
-                          <div className="flex items-start justify-between gap-4">
-                            <h3 className="text-xl font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
-                              {resource.title}
-                            </h3>
-                            <ExternalLink className="h-5 w-5 text-gray-400 group-hover:text-blue-600 flex-shrink-0 transition-colors" />
-                          </div>
-                          <span className="inline-block text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full mt-2">
-                            {resource.type}
-                          </span>
-                        </div>
                       </div>
-                      
-                      {resource.description && (
-                        <p className="text-gray-600 leading-relaxed ml-10">{resource.description}</p>
-                      )}
                     </div>
                   </div>
                 </a>

@@ -1,3 +1,19 @@
 {
-  "albums": []
+  "albums": [
+    {
+      "album_number": "1",
+      "title": "test",
+      "date": "2025-10-28",
+      "description": "1213",
+      "upload_date": "2025-10-28 18:22:15",
+      "cover_image": "/static/gallery/album_1_cover.jpg",
+      "photos": [
+        "/static/gallery/album_1_photo_0.jpg",
+        "/static/gallery/album_1_photo_1.jpg",
+        "/static/gallery/album_1_photo_2.jpg",
+        "/static/gallery/album_1_photo_3.jpg",
+        "/static/gallery/album_1_photo_4.jpg"
+      ]
+    }
+  ]
 }

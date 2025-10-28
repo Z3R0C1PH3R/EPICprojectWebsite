@@ -38,14 +38,23 @@ const Gallery = () => {
   return (
     <div className="bg-white min-h-screen">
       {/* Header */}
-      <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative bg-gradient-to-r from-blue-600 to-blue-800 text-white py-40 overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <img
+            src="/gallery-bg.jpg"
+            alt="About EPIC"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-blue-800/50" />
+        </div>
+
+        {/* Content */}
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">Gallery</h1>
             <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-              Explore our visual documentation of irrigation projects, field work, community engagement, 
-              and research activities from around the world.
-            </p>
+              Explore our visual documentation of irrigation projects, field work, community engagement, and research activities from around the world.</p>
           </div>
         </div>
       </section>

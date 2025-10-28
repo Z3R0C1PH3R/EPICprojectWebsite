@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Calendar, MapPin, Download } from 'lucide-react';
+import { ArrowLeft, Calendar, MapPin } from 'lucide-react';
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
@@ -136,7 +136,7 @@ export default function CaseStudyDetail() {
                 <img
                   src={`${backend_url}${caseStudy.cover_image}`}
                   alt={caseStudy.title}
-                  className="w-full max-h-96 object-cover rounded-lg shadow-lg"
+                  className="w-full h-auto rounded-lg shadow-lg"
                 />
               </div>
             )}
@@ -157,11 +157,11 @@ export default function CaseStudyDetail() {
                 {caseStudy.sections.map((section, index) => (
                   <div key={index} className="bg-white border border-gray-200 rounded-lg overflow-hidden">
                     {section.image && (
-                      <div className="w-full h-64 overflow-hidden">
+                      <div className="w-full">
                         <img
                           src={`${backend_url}${section.image}`}
                           alt={section.heading}
-                          className="w-full h-full object-cover"
+                          className="w-full h-auto"
                         />
                       </div>
                     )}
@@ -179,25 +179,6 @@ export default function CaseStudyDetail() {
                     </div>
                   </div>
                 ))}
-              </div>
-            )}
-
-            {/* Download Section */}
-            {caseStudy.pdf_file && (
-              <div className="bg-gray-50 rounded-lg p-8 mb-12">
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">Download Full Study</h3>
-                <p className="text-gray-600 mb-6">
-                  Access the complete research paper with detailed methodology, results, and conclusions.
-                </p>
-                <a
-                  href={`${backend_url}${caseStudy.pdf_file}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  <Download className="h-5 w-5 mr-2" />
-                  Download PDF
-                </a>
               </div>
             )}
 
@@ -221,20 +202,6 @@ export default function CaseStudyDetail() {
                   <div>
                     <span className="text-sm font-medium text-gray-500">Location:</span>
                     <p className="text-gray-900">{caseStudy.location}</p>
-                  </div>
-                )}
-                {caseStudy.pdf_file && (
-                  <div>
-                    <span className="text-sm font-medium text-gray-500">Download:</span>
-                    <a
-                      href={`${backend_url}${caseStudy.pdf_file}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center text-blue-600 hover:text-blue-800"
-                    >
-                      <Download className="h-4 w-4 mr-2" />
-                      Full Report (PDF)
-                    </a>
                   </div>
                 )}
               </div>

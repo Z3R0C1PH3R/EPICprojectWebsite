@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Calendar, MapPin, Download, ExternalLink } from 'lucide-react';
+import { Calendar, MapPin, ExternalLink } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import CaseStudiesMap from '../components/CaseStudiesMap';
 
@@ -48,7 +48,7 @@ const CaseStudies = () => {
   return (
     <div className="bg-white min-h-screen">
       {/* Header */}
-      <section className="relative bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20 overflow-hidden">
+      <section className="relative bg-gradient-to-r from-blue-600 to-blue-800 text-white py-40 overflow-hidden">
         {/* Background Image */}
         <div className="absolute inset-0">
           <img
@@ -101,12 +101,6 @@ const CaseStudies = () => {
                 </div>
                 
                 <div className="p-6">
-                  <div className="flex justify-between items-start mb-3">
-                    <span className="text-sm text-blue-600 bg-blue-100 px-2 py-1 rounded">
-                      #{study.case_study_number}
-                    </span>
-                  </div>
-                  
                   <h3 className="text-xl font-semibold mb-3 text-gray-900">{study.title}</h3>
                   
                   <div className="space-y-2 mb-4">
@@ -127,20 +121,9 @@ const CaseStudies = () => {
                   <p className="text-gray-600 mb-6 line-clamp-3">{study.description}</p>
                   
                   <div className="flex gap-2">
-                    {study.pdf_file && (
-                      <a
-                        href={`${backend_url}${study.pdf_file}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                      >
-                        <Download className="h-4 w-4 mr-2" />
-                        Download
-                      </a>
-                    )}
                     <button
                       onClick={() => handleViewDetails(study.case_study_number)}
-                      className="flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                      className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                     >
                       <ExternalLink className="h-4 w-4 mr-2" />
                       View Details

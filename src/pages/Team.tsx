@@ -58,15 +58,15 @@ const Team = () => {
   return (
     <div className="bg-white min-h-screen">
       {/* Header */}
-      <section className="relative bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20 overflow-hidden">
+      <section className="relative text-white pt-20 pb-60 overflow-hidden">
         {/* Background Image */}
         <div className="absolute inset-0">
           <img
             src="/group.jpg"
             alt="EPIC Project Team"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover object-[center_45%]"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-blue-800/60" />
+          <div className="absolute inset-0 bg-gradient-to-t from-blue-800/40 to-black/60" />
         </div>
         
         {/* Content */}

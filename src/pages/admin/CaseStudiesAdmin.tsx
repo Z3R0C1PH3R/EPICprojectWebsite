@@ -7,6 +7,22 @@ import { ImagePreview } from '../../components/ImagePreview';
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
+interface CaseStudy {
+  case_study_number: string;
+  title: string;
+  location?: string;
+  date?: string;
+  description: string;
+  cover_image?: string;
+  pdf_file?: string;
+  link?: string;
+  sections?: Array<{
+    heading: string;
+    body: string;
+    image?: string;
+  }>;
+}
+
 export default function CaseStudiesAdmin() {
   const navigate = useNavigate();
   
@@ -18,7 +34,7 @@ export default function CaseStudiesAdmin() {
   }, [navigate]);
 
   const [showNewForm, setShowNewForm] = useState(false);
-  const [existingCaseStudies, setExistingCaseStudies] = useState([]);
+  const [existingCaseStudies, setExistingCaseStudies] = useState<CaseStudy[]>([]);
   const [title, setTitle] = useState('');
   const [location, setLocation] = useState('');
   const [date, setDate] = useState(() => {
@@ -31,7 +47,7 @@ export default function CaseStudiesAdmin() {
   const [coverImage, setCoverImage] = useState<File | null>(null);
   const [originalCoverImage, setOriginalCoverImage] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [editingCaseStudy, setEditingCaseStudy] = useState(null);
+  const [editingCaseStudy, setEditingCaseStudy] = useState<CaseStudy | null>(null);
   const [imageQuality, setImageQuality] = useState(80);
 
   // Sections functionality
@@ -146,7 +162,7 @@ export default function CaseStudiesAdmin() {
     }
   };
 
-  const handleEditCaseStudy = (caseStudy: any) => {
+  const handleEditCaseStudy = (caseStudy: CaseStudy) => {
     setTitle(caseStudy.title);
     setLocation(caseStudy.location || '');
     setDate(caseStudy.date || '');
@@ -186,16 +202,25 @@ export default function CaseStudiesAdmin() {
       formData.append('description', description);
       formData.append('link', link);
       
+      if (editingCaseStudy) {
+        formData.append('is_edit', 'true');
+        formData.append('case_study_number', editingCaseStudy.case_study_number);
+        
+        // Preserve existing images if no new ones uploaded
+        if (!coverImage && editingCaseStudy.cover_image) {
+          formData.append('existing_cover_image', editingCaseStudy.cover_image);
+        }
+        if (!pdfFile && editingCaseStudy.pdf_file) {
+          formData.append('existing_pdf_file', editingCaseStudy.pdf_file);
+        }
+      }
+      
       if (coverImage) {
         formData.append('cover_image', coverImage);
       }
       
       if (pdfFile) {
         formData.append('pdf_file', pdfFile);
-      }
-
-      if (editingCaseStudy) {
-        formData.append('is_edit', 'true');
       }
 
       // Add sections to form data
@@ -279,7 +304,7 @@ export default function CaseStudiesAdmin() {
 
           {/* Existing Case Studies List */}
           <div className="grid gap-6">
-            {existingCaseStudies.map((caseStudy: any) => (
+            {existingCaseStudies.map((caseStudy: CaseStudy) => (
               <div
                 key={caseStudy.case_study_number}
                 className="bg-white backdrop-blur-md rounded-lg p-6 flex flex-col md:flex-row gap-6 items-center"

@@ -5,29 +5,27 @@ import { Link } from 'react-router-dom';
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
 interface Resource {
-  resource_number: string;
+  resource_number: number;
   title: string;
-  type: string;
+  category: string;
+  description: string;
   link: string;
+  thumbnail?: string;
+  type?: string;
   authors?: string;
   date?: string;
 }
 
-interface Photo {
-  photo: string;
-  albumNumber: string;
-  albumTitle: string;
-}
-
 interface Album {
-  album_number: string;
+  album_number: number;
   title: string;
-  photos?: string[];
+  cover_image?: string;
+  date?: string;
 }
 
 const Home = () => {
   const [recentResources, setRecentResources] = useState<Resource[]>([]);
-  const [recentPhotos, setRecentPhotos] = useState<Photo[]>([]);
+  const [recentAlbums, setRecentAlbums] = useState<Album[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -43,28 +41,14 @@ const Home = () => {
         setRecentResources(resourcesData.resources || []);
       }
 
-      // Fetch recent gallery albums to get recent photos
+      // Fetch recent gallery albums
       const albumsResponse = await fetch(`${backend_url}/get_photo_albums`);
       if (albumsResponse.ok) {
         const albumsData = await albumsResponse.json();
         const albums: Album[] = albumsData.albums || [];
         
-        // Collect all photos from all albums with album info
-        const allPhotos: Photo[] = [];
-        albums.forEach((album) => {
-          if (album.photos && album.photos.length > 0) {
-            album.photos.forEach((photo: string) => {
-              allPhotos.push({
-                photo: photo,
-                albumNumber: album.album_number,
-                albumTitle: album.title
-              });
-            });
-          }
-        });
-        
-        // Get the last 4 photos
-        setRecentPhotos(allPhotos.slice(-4));
+        // Get the last 4 albums
+        setRecentAlbums(albums.slice(-4).reverse());
       }
     } catch (error) {
       console.error('Error fetching recent content:', error);
@@ -228,9 +212,9 @@ const Home = () => {
               Project EPIC is supported by the IHE Delft Water and Development Partnership Programme, financed by the Dutch Ministry of Foreign Affairs
             </p>
             <div className="flex justify-center">
-              <div className="w-full max-w-[300px] h-40 flex items-center justify-center">
+              <div className="w-full max-w-[600px] h-40 flex items-center justify-center">
                 <img
-                  src="/logos/dutch-ministry.png"
+                  src="/logos/ihe-funding.png"
                   alt="Dutch Ministry of Foreign Affairs"
                   className="max-w-full max-h-full object-contain"
                 />
@@ -272,19 +256,33 @@ const Home = () => {
                   href={resource.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow p-6"
+                  className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
                 >
-                  <div className="flex items-center text-sm text-gray-500 mb-2">
-                    <BookOpen className="h-4 w-4 mr-1" />
-                    {resource.type}
+                  {/* Thumbnail */}
+                  {resource.thumbnail && (
+                    <div className="w-full h-48">
+                      <img
+                        src={`${backend_url}${resource.thumbnail}`}
+                        alt={resource.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+                  
+                  {/* Content */}
+                  <div className="p-6">
+                    <div className="flex items-center text-sm text-gray-500 mb-2">
+                      <BookOpen className="h-4 w-4 mr-1" />
+                      {resource.type}
+                    </div>
+                    <h3 className="text-xl font-semibold mb-2 text-gray-900">{resource.title}</h3>
+                    {resource.authors && (
+                      <p className="text-sm text-gray-600 mb-2">By: {resource.authors}</p>
+                    )}
+                    {resource.date && (
+                      <p className="text-sm text-gray-500">{resource.date}</p>
+                    )}
                   </div>
-                  <h3 className="text-xl font-semibold mb-2 text-gray-900">{resource.title}</h3>
-                  {resource.authors && (
-                    <p className="text-sm text-gray-600 mb-2">By: {resource.authors}</p>
-                  )}
-                  {resource.date && (
-                    <p className="text-sm text-gray-500">{resource.date}</p>
-                  )}
                 </a>
               ))}
             </div>
@@ -319,24 +317,33 @@ const Home = () => {
           {loading ? (
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="mt-4 text-gray-600">Loading recent photos...</p>
+              <p className="mt-4 text-gray-600">Loading recent albums...</p>
             </div>
-          ) : recentPhotos.length > 0 ? (
+          ) : recentAlbums.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {recentPhotos.map((item, index) => (
+              {recentAlbums.map((album) => (
                 <Link
-                  key={index}
-                  to={`/gallery/${item.albumNumber}`}
+                  key={album.album_number}
+                  to={`/gallery/${album.album_number}`}
                   className="group relative aspect-square overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow"
                 >
-                  <img
-                    src={item.photo}
-                    alt={`Photo from ${item.albumTitle}`}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                  />
+                  {album.cover_image ? (
+                    <img
+                      src={`${backend_url}${album.cover_image}`}
+                      alt={album.title}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                      <Image className="h-12 w-12 text-gray-400" />
+                    </div>
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
                     <div className="absolute bottom-0 left-0 right-0 p-3">
-                      <p className="text-white text-sm font-medium line-clamp-2">{item.albumTitle}</p>
+                      <p className="text-white text-sm font-medium line-clamp-2">{album.title}</p>
+                      {album.date && (
+                        <p className="text-white/80 text-xs mt-1">{album.date}</p>
+                      )}
                     </div>
                   </div>
                 </Link>
@@ -345,7 +352,7 @@ const Home = () => {
           ) : (
             <div className="text-center py-12 text-gray-500">
               <Image className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-              <p>No recent photos available.</p>
+              <p>No recent albums available.</p>
             </div>
           )}
         </div>

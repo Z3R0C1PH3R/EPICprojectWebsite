@@ -21,6 +21,7 @@ export default function ResourcesAdmin() {
   const [type, setType] = useState('');
   const [description, setDescription] = useState('');
   const [link, setLink] = useState('');
+  const [thumbnail, setThumbnail] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingResource, setEditingResource] = useState(null);
 
@@ -82,21 +83,29 @@ export default function ResourcesAdmin() {
     setIsSubmitting(true);
     
     try {
-      const payload = {
-        title,
-        type,
-        description,
-        link,
-        is_edit: editingResource ? 'true' : 'false',
-        resource_number: editingResource ? (editingResource as any).resource_number : undefined
-      };
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('type', type);
+      formData.append('description', description);
+      formData.append('link', link);
+      
+      if (editingResource) {
+        formData.append('is_edit', 'true');
+        formData.append('resource_number', (editingResource as any).resource_number);
+        
+        // Preserve existing thumbnail if no new one uploaded
+        if (!thumbnail && (editingResource as any).thumbnail) {
+          formData.append('existing_thumbnail', (editingResource as any).thumbnail);
+        }
+      }
+      
+      if (thumbnail) {
+        formData.append('thumbnail', thumbnail);
+      }
 
       const response = await fetch(backend_url + '/upload_resource', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
+        body: formData,
       });
 
       const data = await response.json();
@@ -114,6 +123,7 @@ export default function ResourcesAdmin() {
       setType('');
       setDescription('');
       setLink('');
+      setThumbnail(null);
       setEditingResource(null);
       
     } catch (error) {
@@ -254,6 +264,28 @@ export default function ResourcesAdmin() {
                     onChange={(e) => setDescription(e.target.value)}
                     className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 h-32 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Thumbnail Image (Optional)
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setThumbnail(e.target.files?.[0] || null)}
+                    className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  {editingResource && (editingResource as any).thumbnail && !thumbnail && (
+                    <p className="text-sm text-gray-600 mt-2">
+                      Current thumbnail: {(editingResource as any).thumbnail.split('/').pop()}
+                    </p>
+                  )}
+                  {thumbnail && (
+                    <p className="text-sm text-green-600 mt-2">
+                      New thumbnail selected: {thumbnail.name}
+                    </p>
+                  )}
                 </div>
 
                 <div>

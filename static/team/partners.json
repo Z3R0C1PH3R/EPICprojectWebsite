@@ -1,23 +1,9 @@
 [
   {
     "id": "1",
-    "name": "ABCD ",
-    "description": "HELLLO",
-    "members": [
-      {
-        "id": "4f7aaf9a-7eee-4861-8f02-0c68891f0072",
-        "name": "Testing",
-        "designation": "Something",
-        "role": "Nice",
-        "department": "",
-        "bio": "Nice",
-        "email": "",
-        "linkedin": "",
-        "twitter": "",
-        "webpage": "",
-        "image": ""
-      }
-    ]
+    "name": "IIT Delhi",
+    "description": "",
+    "members": []
   },
   {
     "id": "2",

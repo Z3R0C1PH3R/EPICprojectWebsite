@@ -7,6 +7,15 @@ import { ImagePreview } from '../../components/ImagePreview';
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
+interface Album {
+  album_number: string;
+  title: string;
+  date?: string;
+  description: string;
+  cover_image?: string;
+  photos: string[];
+}
+
 export default function GalleryAdmin() {
   const navigate = useNavigate();
   useEffect(() => {
@@ -17,7 +26,7 @@ export default function GalleryAdmin() {
   }, [navigate]);
 
   const [showNewForm, setShowNewForm] = useState(false);
-  const [existingAlbums, setExistingAlbums] = useState([]);
+  const [existingAlbums, setExistingAlbums] = useState<Album[]>([]);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [date, setDate] = useState(() => {
@@ -30,7 +39,7 @@ export default function GalleryAdmin() {
   const [photoQualities, setPhotoQualities] = useState<number[]>([]);
   const [compressedPhotos, setCompressedPhotos] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [editingAlbum, setEditingAlbum] = useState(null);
+  const [editingAlbum, setEditingAlbum] = useState<Album | null>(null);
   const [coverQuality, setCoverQuality] = useState(80);
   const [photoQuality, setPhotoQuality] = useState(80);
   const [existingPhotos, setExistingPhotos] = useState<string[]>([]);
@@ -117,10 +126,10 @@ export default function GalleryAdmin() {
     }
   };
 
-  const handleEditAlbum = (album: any) => {
+  const handleEditAlbum = (album: Album) => {
     setTitle(album.title);
     setDescription(album.description || '');
-    setDate(album.date);
+    setDate(album.date || '');
     setExistingPhotos(album.photos || []);
     setEditingAlbum(album);
     setShowNewForm(true);
@@ -142,18 +151,24 @@ export default function GalleryAdmin() {
       formData.append('description', description);
       formData.append('date', date);
       
+      if (editingAlbum) {
+        formData.append('is_edit', 'true');
+        formData.append('album_number', editingAlbum.album_number);
+        formData.append('existing_photos', JSON.stringify(existingPhotos));
+        
+        // Preserve existing cover image if no new one uploaded
+        if (!coverImage && editingAlbum.cover_image) {
+          formData.append('existing_cover_image', editingAlbum.cover_image);
+        }
+      }
+      
       if (coverImage) {
         formData.append('cover_image', coverImage);
       }
 
-      if (editingAlbum) {
-        formData.append('is_edit', 'true');
-        formData.append('existing_photos', JSON.stringify(existingPhotos));
-      }
-
-            photos.forEach((photo, index) => {
-        formData.append(`photo_${index}`, compressedPhotos[index] || photo);
-        formData.append(`photo_${index}_caption`, photoCaptions[index] || '');
+      // Append photos as a list with the key 'photos'
+      photos.forEach((photo, index) => {
+        formData.append('photos', compressedPhotos[index] || photo);
       });
 
       const response = await fetch(backend_url + '/upload_photo_album', {
@@ -220,7 +235,7 @@ export default function GalleryAdmin() {
 
           {/* Existing Albums List */}
           <div className="grid gap-6">
-            {existingAlbums.map((album: any) => (
+            {existingAlbums.map((album: Album) => (
               <div
                 key={album.album_number}
                 className="bg-white backdrop-blur-md rounded-lg p-6 flex flex-col md:flex-row gap-6 items-center"

@@ -10,14 +10,12 @@ CORS(app)
 
 # Upload Folders Configuration
 CASE_STUDIES_UPLOAD_FOLDER = 'static/case_studies'
-EVENTS_UPLOAD_FOLDER = 'static/events'
 RESOURCES_UPLOAD_FOLDER = 'static/resources'
 GALLERY_UPLOAD_FOLDER = 'static/gallery'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'pdf', 'doc', 'docx'}
 
 # Directory files
 CASE_STUDIES_DIR_FILE = os.path.join(CASE_STUDIES_UPLOAD_FOLDER, 'directory.json')
-EVENTS_DIR_FILE = os.path.join(EVENTS_UPLOAD_FOLDER, 'directory.json')
 RESOURCES_DIR_FILE = os.path.join(RESOURCES_UPLOAD_FOLDER, 'directory.json')
 GALLERY_DIR_FILE = os.path.join(GALLERY_UPLOAD_FOLDER, 'directory.json')
 TEAM_DIR_FILE = 'static/team/partners.json'
@@ -28,7 +26,6 @@ app.config['MAX_FILE_SIZE'] = 10 * 1024 * 1024      # 10MB max-file-size
 
 # Create upload folders
 os.makedirs(CASE_STUDIES_UPLOAD_FOLDER, exist_ok=True)
-os.makedirs(EVENTS_UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(RESOURCES_UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(GALLERY_UPLOAD_FOLDER, exist_ok=True)
 os.makedirs('static/team', exist_ok=True)
@@ -40,7 +37,6 @@ def create_directory_file_if_not_exists(dir_file, key):
             json.dump({key: []}, f)
 
 create_directory_file_if_not_exists(CASE_STUDIES_DIR_FILE, 'case_studies')
-create_directory_file_if_not_exists(EVENTS_DIR_FILE, 'events')
 create_directory_file_if_not_exists(RESOURCES_DIR_FILE, 'resources')
 create_directory_file_if_not_exists(GALLERY_DIR_FILE, 'albums')
 
@@ -128,18 +124,23 @@ def upload_case_study():
         if not all(field in request.form for field in ['title']):
             return jsonify({"error": "Missing required fields"}), 400
 
-        # Generate automatic case study number
-        with open(CASE_STUDIES_DIR_FILE, 'r') as f:
-            data = json.load(f)
-        existing_case_studies = data.get('case_studies', [])
-        case_study_number = str(len(existing_case_studies) + 1)
+        is_edit = request.form.get('is_edit') == 'true'
+        
+        # Get or generate case study number
+        if is_edit and 'case_study_number' in request.form:
+            case_study_number = request.form.get('case_study_number')
+        else:
+            with open(CASE_STUDIES_DIR_FILE, 'r') as f:
+                data = json.load(f)
+            existing_case_studies = data.get('case_studies', [])
+            case_study_number = str(len(existing_case_studies) + 1)
         
         title = request.form.get('title')
         location = request.form.get('location', '')
         date = request.form.get('date', '')
         category = request.form.get('category', '')
-        is_edit = request.form.get('is_edit') == 'true'
 
+        # Handle cover image - preserve existing if no new upload
         cover_image_path = None
         if 'cover_image' in request.files and request.files['cover_image'].filename:
             file = request.files['cover_image']
@@ -148,7 +149,10 @@ def upload_case_study():
                 filepath = os.path.join(CASE_STUDIES_UPLOAD_FOLDER, filename)
                 file.save(filepath)
                 cover_image_path = f"/static/case_studies/{filename}"
+        elif is_edit and 'existing_cover_image' in request.form:
+            cover_image_path = request.form.get('existing_cover_image')
 
+        # Handle PDF - preserve existing if no new upload
         pdf_path = None
         if 'pdf_file' in request.files and request.files['pdf_file'].filename:
             file = request.files['pdf_file']
@@ -157,6 +161,8 @@ def upload_case_study():
                 filepath = os.path.join(CASE_STUDIES_UPLOAD_FOLDER, filename)
                 file.save(filepath)
                 pdf_path = f"/static/case_studies/{filename}"
+        elif is_edit and 'existing_pdf_file' in request.form:
+            pdf_path = request.form.get('existing_pdf_file')
 
         # Process sections
         sections = []
@@ -203,79 +209,6 @@ def upload_case_study():
         app.logger.error(f"Upload error: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
-@app.route("/upload_event", methods=["POST"])
-def upload_event():
-    try:
-        if not all(field in request.form for field in ['title']):
-            return jsonify({"error": "Missing required fields"}), 400
-
-        # Generate automatic event number
-        with open(EVENTS_DIR_FILE, 'r') as f:
-            data = json.load(f)
-        existing_events = data.get('events', [])
-        event_number = str(len(existing_events) + 1)
-        
-        title = request.form.get('title')
-        date = request.form.get('date', '')
-        location = request.form.get('location', '')
-        type = request.form.get('type', '')
-        is_edit = request.form.get('is_edit') == 'true'
-
-        cover_image_path = None
-        if 'cover_image' in request.files and request.files['cover_image'].filename:
-            file = request.files['cover_image']
-            if file and allowed_file(file.filename):
-                filename = secure_filename(f"event_{event_number}_cover.{file.filename.rsplit('.', 1)[1]}")
-                filepath = os.path.join(EVENTS_UPLOAD_FOLDER, filename)
-                file.save(filepath)
-                cover_image_path = f"/static/events/{filename}"
-
-        # Process sections
-        sections = []
-        section_index = 0
-        while f'section_{section_index}_heading' in request.form:
-            section = {
-                'heading': request.form.get(f'section_{section_index}_heading', ''),
-                'body': request.form.get(f'section_{section_index}_body', '')
-            }
-            
-            # Handle section image
-            if f'section_{section_index}_image' in request.files and request.files[f'section_{section_index}_image'].filename:
-                file = request.files[f'section_{section_index}_image']
-                if file and allowed_file(file.filename):
-                    filename = secure_filename(f"event_{event_number}_section_{section_index}.{file.filename.rsplit('.', 1)[1]}")
-                    filepath = os.path.join(EVENTS_UPLOAD_FOLDER, filename)
-                    file.save(filepath)
-                    section['image'] = f"/static/events/{filename}"
-            elif f'section_{section_index}_existing_image' in request.form and request.form[f'section_{section_index}_existing_image']:
-                section['image'] = request.form[f'section_{section_index}_existing_image']
-            
-            if section['heading'] or section['body'] or section.get('image'):
-                sections.append(section)
-            
-            section_index += 1
-
-        event_data = {
-            'event_number': event_number,
-            'title': title,
-            'date': date,
-            'location': location,
-            'type': type,
-            'status': request.form.get('status', 'Upcoming'),
-            'description': request.form.get('description', ''),
-            'upload_date': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            'cover_image': cover_image_path,
-            'registration_link': request.form.get('registration_link', ''),
-            'sections': sections
-        }
-
-        update_directory(EVENTS_DIR_FILE, 'events', event_data, 'event_number')
-        return jsonify({"message": "Upload successful"}), 200
-
-    except Exception as e:
-        app.logger.error(f"Upload error: {str(e)}")
-        return jsonify({"error": str(e)}), 500
-
 @app.route("/upload_resource", methods=["POST"])
 def upload_resource():
     try:
@@ -315,15 +248,31 @@ def upload_resource():
             if not all(field in request.form for field in ['title']):
                 return jsonify({"error": "Missing required fields"}), 400
 
-            # Generate automatic resource number
-            with open(RESOURCES_DIR_FILE, 'r') as f:
-                data = json.load(f)
-            existing_resources = data.get('resources', [])
-            resource_number = str(len(existing_resources) + 1)
+            is_edit = request.form.get('is_edit') == 'true'
+            
+            # Get or generate resource number
+            if is_edit and 'resource_number' in request.form:
+                resource_number = request.form.get('resource_number')
+            else:
+                with open(RESOURCES_DIR_FILE, 'r') as f:
+                    data = json.load(f)
+                existing_resources = data.get('resources', [])
+                resource_number = str(len(existing_resources) + 1)
             
             title = request.form.get('title')
             type = request.form.get('type', '')
-            is_edit = request.form.get('is_edit') == 'true'
+
+            # Handle thumbnail image - preserve existing if no new upload
+            thumbnail_path = None
+            if 'thumbnail' in request.files and request.files['thumbnail'].filename:
+                file = request.files['thumbnail']
+                if file and allowed_file(file.filename):
+                    filename = secure_filename(f"resource_{resource_number}_thumbnail.{file.filename.rsplit('.', 1)[1]}")
+                    filepath = os.path.join(RESOURCES_UPLOAD_FOLDER, filename)
+                    file.save(filepath)
+                    thumbnail_path = f"/static/resources/{filename}"
+            elif is_edit and 'existing_thumbnail' in request.form:
+                thumbnail_path = request.form.get('existing_thumbnail')
 
             file_path = None
             if 'resource_file' in request.files and request.files['resource_file'].filename:
@@ -341,6 +290,7 @@ def upload_resource():
                 'description': request.form.get('description', ''),
                 'upload_date': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 'file': file_path,
+                'thumbnail': thumbnail_path,
                 'link': request.form.get('link', ''),
                 'download_size': request.form.get('download_size', '')
             }
@@ -358,16 +308,21 @@ def upload_photo_album():
         if not all(field in request.form for field in ['title']):
             return jsonify({"error": "Missing required fields"}), 400
 
-        # Generate automatic album number
-        with open(GALLERY_DIR_FILE, 'r') as f:
-            data = json.load(f)
-        existing_albums = data.get('albums', [])
-        album_number = str(len(existing_albums) + 1)
+        is_edit = request.form.get('is_edit') == 'true'
+        
+        # Get or generate album number
+        if is_edit and 'album_number' in request.form:
+            album_number = request.form.get('album_number')
+        else:
+            with open(GALLERY_DIR_FILE, 'r') as f:
+                data = json.load(f)
+            existing_albums = data.get('albums', [])
+            album_number = str(len(existing_albums) + 1)
         
         title = request.form.get('title')
         date = request.form.get('date', '')
-        is_edit = request.form.get('is_edit') == 'true'
 
+        # Handle cover image - preserve existing if no new upload
         cover_image_path = None
         if 'cover_image' in request.files and request.files['cover_image'].filename:
             file = request.files['cover_image']
@@ -376,6 +331,8 @@ def upload_photo_album():
                 filepath = os.path.join(GALLERY_UPLOAD_FOLDER, filename)
                 file.save(filepath)
                 cover_image_path = f"/static/gallery/{filename}"
+        elif is_edit and 'existing_cover_image' in request.form:
+            cover_image_path = request.form.get('existing_cover_image')
 
         photos = []
         photo_files = request.files.getlist('photos')
@@ -419,18 +376,6 @@ def get_case_studies():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route("/get_events", methods=["GET"])
-def get_events():
-    try:
-        with open(EVENTS_DIR_FILE, 'r') as f:
-            data = json.load(f)
-        limit = request.args.get('limit', type=int)
-        if limit:
-            data['events'] = data['events'][-limit:]
-        return jsonify(data), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
 @app.route("/get_resources", methods=["GET"])
 def get_resources():
     try:
@@ -470,18 +415,6 @@ def delete_case_study(case_study_number):
             data = json.load(f)
         data['case_studies'] = [cs for cs in data['case_studies'] if cs['case_study_number'] != case_study_number]
         with open(CASE_STUDIES_DIR_FILE, 'w') as f:
-            json.dump(data, f, indent=2)
-        return jsonify({"message": "Delete successful"}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.route("/delete_event/<event_number>", methods=["DELETE"])
-def delete_event(event_number):
-    try:
-        with open(EVENTS_DIR_FILE, 'r') as f:
-            data = json.load(f)
-        data['events'] = [e for e in data['events'] if e['event_number'] != event_number]
-        with open(EVENTS_DIR_FILE, 'w') as f:
             json.dump(data, f, indent=2)
         return jsonify({"message": "Delete successful"}), 200
     except Exception as e:

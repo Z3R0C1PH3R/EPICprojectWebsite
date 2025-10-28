@@ -7,11 +7,13 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div>
             <div className="flex items-center space-x-3 mb-4">
-              <img 
-                src="/logo.png" 
-                alt="EPIC Logo" 
-                className="h-16 w-auto"
-              />
+              <div className="bg-white rounded-full p-2 flex items-center justify-center">
+                <img 
+                  src="/logo.png" 
+                  alt="EPIC Logo" 
+                  className="h-12 w-auto"
+                />
+              </div>
               <div>
                 <span className="text-3xl font-bold">EPIC</span>
                 <p className="text-base text-gray-300">Equity Perspectives for Irrigation Care or Control</p>

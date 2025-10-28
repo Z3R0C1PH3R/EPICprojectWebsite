@@ -1,20 +1,15 @@
 {
   "resources": [
     {
-      "resource_number": "1",
+      "resource_number": "3",
       "title": "Test",
-      "type": "Conference Papers",
-      "description": "Something cool",
-      "link": "https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ&start_radio=1&pp=ygUJcmljayByb2xsoAcB",
-      "upload_date": "2025-10-03 17:25:02"
-    },
-    {
-      "resource_number": "2",
-      "title": "TItie",
-      "type": "Conference Papers",
-      "description": "onekldnf",
-      "link": "https://abc.com",
-      "upload_date": "2025-10-04 14:47:56"
+      "type": "Journal Articles",
+      "description": "kmaksma",
+      "upload_date": "2025-10-28 18:12:13",
+      "file": null,
+      "thumbnail": "/static/resources/resource_3_thumbnail.jpg",
+      "link": "https://meow.com",
+      "download_size": ""
     }
   ]
 }
