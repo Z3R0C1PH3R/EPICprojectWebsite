@@ -9,6 +9,7 @@ import Team from './pages/Team';
 import Resources from './pages/Resources';
 import Gallery from './pages/Gallery';
 import GalleryAlbumDetail from './pages/GalleryAlbumDetail';
+import NotFound from './pages/NotFound';
 
 // Admin imports
 import AdminPortal from './pages/admin/AdminPortal';
@@ -39,6 +40,9 @@ function App() {
             <Route path="/admin/resources" element={<ResourcesAdmin />} />
             <Route path="/admin/gallery" element={<GalleryAdmin />} />
             <Route path="/admin/team" element={<TeamAdmin />} />
+            
+            {/* 404 Catch-all */}
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
         <Footer />

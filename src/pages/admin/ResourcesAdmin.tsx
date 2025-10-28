@@ -10,8 +10,8 @@ export default function ResourcesAdmin() {
   const navigate = useNavigate();
   
   useEffect(() => {
-    const isAuthenticated = localStorage.getItem('isAuthenticated');
-    if (!isAuthenticated) {
+    const authToken = localStorage.getItem('authToken');
+    if (!authToken) {
       navigate('/admin');
     }
   }, [navigate]);
