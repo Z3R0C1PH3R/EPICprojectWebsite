@@ -19,7 +19,6 @@ interface CaseStudy {
   category: string;
   description: string;
   cover_image: string;
-  pdf_file: string;
   upload_date: string;
   sections?: CaseStudySection[];
 }
@@ -153,30 +152,28 @@ export default function CaseStudyDetail() {
 
             {/* Sections */}
             {caseStudy.sections && caseStudy.sections.length > 0 && (
-              <div className="mb-12 space-y-8">
+              <div className="mb-12 space-y-12">
                 {caseStudy.sections.map((section, index) => (
-                  <div key={index} className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                  <div key={index}>
                     {section.image && (
-                      <div className="w-full">
+                      <div className="mb-8">
                         <img
                           src={`${backend_url}${section.image}`}
                           alt={section.heading}
-                          className="w-full h-auto"
+                          className="w-full h-auto rounded-lg shadow-lg"
                         />
                       </div>
                     )}
-                    <div className="p-6">
-                      {section.heading && (
-                        <h3 className="text-2xl font-bold text-gray-900 mb-4">{section.heading}</h3>
-                      )}
-                      {section.body && (
-                        <div className="prose prose-lg max-w-none">
-                          <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
-                            {section.body}
-                          </p>
-                        </div>
-                      )}
-                    </div>
+                    {section.heading && (
+                      <h2 className="text-2xl font-bold text-gray-900 mb-6">{section.heading}</h2>
+                    )}
+                    {section.body && (
+                      <div className="prose prose-lg max-w-none">
+                        <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                          {section.body}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

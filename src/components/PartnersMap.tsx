@@ -44,6 +44,8 @@ interface Partner {
   lat: number;
   lng: number;
   color: string;
+  popupOffset?: [number, number]; // [x, y] offset for popup positioning
+  popupAnchor?: 'top' | 'bottom' | 'left' | 'right'; // Direction of the arrow
 }
 
 // Component to handle map bounds
@@ -60,6 +62,26 @@ function MapBounds({ partners }: { partners: Partner[] }) {
   return null;
 }
 
+// Component to auto-open all popups
+function AutoOpenPopups() {
+  const map = useMap();
+  
+  useEffect(() => {
+    // Wait for map to be ready and markers to be added
+    const timer = setTimeout(() => {
+      map.eachLayer((layer) => {
+        if (layer instanceof L.Marker) {
+          layer.openPopup();
+        }
+      });
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }, [map]);
+  
+  return null;
+}
+
 interface PartnersMapProps {
   onPartnerClick?: (partnerId: string) => void;
 }
@@ -67,76 +89,92 @@ interface PartnersMapProps {
 const PartnersMap = ({ onPartnerClick }: PartnersMapProps) => {
   const partners: Partner[] = [
     {
-      id: 'iitd',
+      id: '1',
       name: 'IIT Delhi',
       location: 'New Delhi, India',
       country: 'India',
       lat: 28.5450,
       lng: 77.1920,
-      color: '#2563EB' // Blue for India
+      color: '#2563EB', // Blue for India
+      popupOffset: [0, 10], // Adjust these values: [horizontal, vertical]
+      popupAnchor: 'bottom'
     },
     {
-      id: 'fes',
+      id: '2',
       name: 'FES',
-      location: 'Bhilwara, Rajasthan, India',
+      location: 'Bhilwara, Rajasthan',
       country: 'India',
       lat: 25.3470,
       lng: 74.6409,
-      color: '#2563EB' // Blue for India
+      color: '#2563EB', // Blue for India
+      popupOffset: [160, 80],
+      popupAnchor: 'left'
     },
     {
-      id: 'atree',
+      id: '3',
       name: 'ATREE',
-      location: 'Bangalore, India',
+      location: 'Bangalore',
       country: 'India',
       lat: 12.9716,
       lng: 77.5946,
-      color: '#2563EB' // Blue for India
+      color: '#2563EB', // Blue for India
+      popupOffset: [0, 140],
+      popupAnchor: 'top'
     },
     {
-      id: 'ihe-delft',
+      id: '4',
       name: 'IHE Delft',
-      location: 'Delft, Netherlands',
+      location: 'Delft',
       country: 'Netherlands',
       lat: 52.0116,
       lng: 4.3571,
-      color: '#7C3AED' // Purple for Netherlands
+      color: '#7C3AED', // Purple for Netherlands
+      popupOffset: [0, 140],
+      popupAnchor: 'top'
     },
     {
-      id: 'wollo',
+      id: '5',
       name: 'Wollo University',
       location: 'Dessie, Ethiopia',
       country: 'Ethiopia',
       lat: 11.1300,
       lng: 39.6333,
-      color: '#DC2626' // Red for Ethiopia
+      color: '#DC2626', // Red for Ethiopia
+      popupOffset: [-160, 80],
+      popupAnchor: 'right'
     },
     {
-      id: 'wodet',
+      id: '6',
       name: 'WoDET',
       location: 'Dessie, Ethiopia',
       country: 'Ethiopia',
       lat: 11.1350,
       lng: 39.6383,
-      color: '#DC2626' // Red for Ethiopia
+      color: '#DC2626', // Red for Ethiopia
+      popupOffset: [0, 10],
+      popupAnchor: 'bottom'
     },
     {
-      id: 'nmaist',
+      id: '7',
       name: 'NMAIST',
       location: 'Arusha, Tanzania',
       country: 'Tanzania',
       lat: -3.3869,
       lng: 36.6830,
-      color: '#059669' // Green for Tanzania
+      color: '#059669', // Green for Tanzania
+      popupOffset: [-160, 80],
+      popupAnchor: 'right'
     },
     {
-      id: 'pbwb',
+      id: '8',
       name: 'PBWB',
       location: 'Moshi, Tanzania',
       country: 'Tanzania',
       lat: -3.3500,
       lng: 37.3500,
-      color: '#059669' // Green for Tanzania
+      color: '#059669', // Green for Tanzania
+      popupOffset: [0, 140],
+      popupAnchor: 'top'
     }
   ];
 
@@ -159,7 +197,11 @@ const PartnersMap = ({ onPartnerClick }: PartnersMapProps) => {
           center={[15, 45]}
           zoom={3}
           style={{ height: '600px', width: '100%' }}
-          scrollWheelZoom={true}
+          scrollWheelZoom={false}
+          dragging={false}
+          doubleClickZoom={false}
+          zoomControl={false}
+          touchZoom={false}
           className="z-0"
         >
           <TileLayer
@@ -168,6 +210,7 @@ const PartnersMap = ({ onPartnerClick }: PartnersMapProps) => {
           />
           
           <MapBounds partners={partners} />
+          <AutoOpenPopups />
           
           {partners.map((partner) => (
             <Marker
@@ -175,16 +218,29 @@ const PartnersMap = ({ onPartnerClick }: PartnersMapProps) => {
               position={[partner.lat, partner.lng]}
               icon={createCustomIcon(partner.color)}
               eventHandlers={{
-                click: () => handleMarkerClick(partner.id),
+                click: (e) => {
+                  e.originalEvent.preventDefault();
+                  e.originalEvent.stopPropagation();
+
+                  const marker = e.target as L.Marker;
+                  marker.openPopup();
+
+                  handleMarkerClick(partner.id);
+                },
               }}
             >
-              <Popup>
-                <div className="text-center p-2">
-                  <h3 className="font-bold text-lg text-gray-900">{partner.name}</h3>
-                  <p className="text-gray-600 text-sm">{partner.location}</p>
-                  <p className="text-blue-600 text-xs mt-1 cursor-pointer hover:underline">
-                    Click to view team →
-                  </p>
+              <Popup 
+                autoClose={false}
+                closeOnClick={false}
+                closeButton={false}
+                className={`custom-label-popup popup-anchor-${partner.popupAnchor || 'bottom'}`}
+                offset={partner.popupOffset || [0, -55]}
+              >
+                <div 
+                  className="text-center p-2 cursor-pointer"
+                  onClick={() => handleMarkerClick(partner.id)}
+                >
+                  <h3 className="font-bold text-base text-gray-900">{partner.name}</h3>
                 </div>
               </Popup>
             </Marker>
@@ -211,6 +267,44 @@ const PartnersMap = ({ onPartnerClick }: PartnersMapProps) => {
           <span className="text-sm text-gray-700 font-medium">Tanzania</span>
         </div>
       </div>
+      
+      {/* CSS for popup arrow directions */}
+      <style>{`
+        /* Bottom arrow (default - points down to marker) */
+        .popup-anchor-bottom .leaflet-popup-tip-container {
+          bottom: 0;
+          margin-bottom: -20px;
+        }
+        .popup-anchor-bottom .leaflet-popup-tip {
+          box-shadow: none;
+        }
+        
+        /* Top arrow (points up) */
+        .popup-anchor-top .leaflet-popup-tip-container {
+          top: 0;
+          bottom: auto;
+          margin-top: -20px;
+          transform: rotate(180deg);
+        }
+        
+        /* Left arrow (points left) */
+        .popup-anchor-left .leaflet-popup-tip-container {
+          left: 0;
+          right: auto;
+          bottom: 50%;
+          margin-left: -30px;
+          transform: translateY(50%) rotate(+90deg);
+        }
+        
+        /* Right arrow (points right) */
+        .popup-anchor-right .leaflet-popup-tip-container {
+          right: 0;
+          left: auto;
+          bottom: 50%;
+          margin-right: -30px;
+          transform: translateY(50%) rotate(-90deg);
+        }
+      `}</style>
     </div>
   );
 };

@@ -4,6 +4,7 @@ import { ArrowLeft, Plus, Edit, Trash2, ExternalLink } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { compressImage } from '../../utils/imageCompression';
 import { ImagePreview } from '../../components/ImagePreview';
+import { authenticatedFetch } from '../../utils/auth';
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
@@ -14,8 +15,6 @@ interface CaseStudy {
   date?: string;
   description: string;
   cover_image?: string;
-  pdf_file?: string;
-  link?: string;
   sections?: Array<{
     heading: string;
     body: string;
@@ -42,8 +41,6 @@ export default function CaseStudiesAdmin() {
     return today.toISOString().split('T')[0];
   });
   const [description, setDescription] = useState('');
-  const [pdfFile, setPdfFile] = useState<File | null>(null);
-  const [link, setLink] = useState('');
   const [coverImage, setCoverImage] = useState<File | null>(null);
   const [originalCoverImage, setOriginalCoverImage] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -85,12 +82,6 @@ export default function CaseStudiesAdmin() {
     if (originalCoverImage) {
       const compressed = await compressImage(originalCoverImage, quality);
       setCoverImage(compressed);
-    }
-  };
-
-  const handlePdfFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setPdfFile(e.target.files[0]);
     }
   };
 
@@ -147,7 +138,7 @@ export default function CaseStudiesAdmin() {
   const handleDeleteCaseStudy = async (caseStudyNumber: string) => {
     if (window.confirm('Are you sure you want to delete this case study?')) {
       try {
-        const response = await fetch(`${backend_url}/delete_case_study/${caseStudyNumber}`, {
+        const response = await authenticatedFetch(`${backend_url}/delete_case_study/${caseStudyNumber}`, {
           method: 'DELETE',
         });
         if (response.ok) {
@@ -167,7 +158,6 @@ export default function CaseStudiesAdmin() {
     setLocation(caseStudy.location || '');
     setDate(caseStudy.date || '');
     setDescription(caseStudy.description);
-    setLink(caseStudy.link || '');
     setEditingCaseStudy(caseStudy);
     setShowNewForm(true);
     
@@ -200,7 +190,6 @@ export default function CaseStudiesAdmin() {
       formData.append('location', location);
       formData.append('date', date);
       formData.append('description', description);
-      formData.append('link', link);
       
       if (editingCaseStudy) {
         formData.append('is_edit', 'true');
@@ -210,17 +199,10 @@ export default function CaseStudiesAdmin() {
         if (!coverImage && editingCaseStudy.cover_image) {
           formData.append('existing_cover_image', editingCaseStudy.cover_image);
         }
-        if (!pdfFile && editingCaseStudy.pdf_file) {
-          formData.append('existing_pdf_file', editingCaseStudy.pdf_file);
-        }
       }
       
       if (coverImage) {
         formData.append('cover_image', coverImage);
-      }
-      
-      if (pdfFile) {
-        formData.append('pdf_file', pdfFile);
       }
 
       // Add sections to form data
@@ -234,7 +216,7 @@ export default function CaseStudiesAdmin() {
         formData.append(`section_${index}_body`, section.body);
       });
 
-      const response = await fetch(backend_url + '/upload_case_study', {
+      const response = await authenticatedFetch(backend_url + '/upload_case_study', {
         method: 'POST',
         body: formData,
       });
@@ -251,7 +233,6 @@ export default function CaseStudiesAdmin() {
       
       // Clear form
       setCoverImage(null);
-      setPdfFile(null);
       setTitle('');
       setLocation('');
       setDate(() => {
@@ -259,7 +240,6 @@ export default function CaseStudiesAdmin() {
         return today.toISOString().split('T')[0];
       });
       setDescription('');
-      setLink('');
       setEditingCaseStudy(null);
       setNumSections(1);
       setSections([{ image: null, heading: '', body: '' }]);
@@ -425,37 +405,24 @@ export default function CaseStudiesAdmin() {
 
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    External Link (Optional)
+                    Cover Image {!editingCaseStudy && '*'}
                   </label>
                   <input
-                    type="url"
-                    value={link}
-                    onChange={(e) => setLink(e.target.value)}
+                    type="file"
+                    onChange={handleCoverImageSelect}
+                    accept="image/*"
                     className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required={!editingCaseStudy}
                   />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
+                  <div className="mt-2">
                     <label className="block text-sm font-medium mb-2">
-                      Cover Image {!editingCaseStudy && '*'}
+                      Image Quality: {imageQuality}%
                     </label>
                     <input
-                      type="file"
-                      onChange={handleCoverImageSelect}
-                      accept="image/*"
-                      className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      required={!editingCaseStudy}
-                    />
-                    <div className="mt-2">
-                      <label className="block text-sm font-medium mb-2">
-                        Image Quality: {imageQuality}%
-                      </label>
-                      <input
-                        type="range"
-                        min="1"
-                        max="100"
-                        value={imageQuality}
+                      type="range"
+                      min="1"
+                      max="100"
+                      value={imageQuality}
                         onChange={(e) => handleCoverImageQualityChange(Number(e.target.value))}
                         className="w-full"
                       />
@@ -466,24 +433,6 @@ export default function CaseStudiesAdmin() {
                       </div>
                     )}
                   </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      PDF File (Optional)
-                    </label>
-                    <input
-                      type="file"
-                      onChange={handlePdfFileSelect}
-                      accept=".pdf"
-                      className="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                    {pdfFile && (
-                      <p className="text-sm text-gray-500 mt-2">
-                        Selected: {pdfFile.name} ({(pdfFile.size / 1024 / 1024).toFixed(2)} MB)
-                      </p>
-                    )}
-                  </div>
-                </div>
 
                 <div>
                   <label className="block text-sm font-medium mb-2">Number of Sections</label>

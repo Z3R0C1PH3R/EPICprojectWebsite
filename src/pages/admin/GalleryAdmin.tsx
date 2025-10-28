@@ -4,6 +4,7 @@ import { ArrowLeft, Plus, Edit, Trash2, ExternalLink } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { compressImage } from '../../utils/imageCompression';
 import { ImagePreview } from '../../components/ImagePreview';
+import { authenticatedFetch } from '../../utils/auth';
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
@@ -111,7 +112,7 @@ export default function GalleryAdmin() {
   const handleDeleteAlbum = async (albumNumber: string) => {
     if (window.confirm('Are you sure you want to delete this album?')) {
       try {
-        const response = await fetch(`${backend_url}/delete_photo_album/${albumNumber}`, {
+        const response = await authenticatedFetch(`${backend_url}/delete_photo_album/${albumNumber}`, {
           method: 'DELETE',
         });
         if (response.ok) {
@@ -171,7 +172,7 @@ export default function GalleryAdmin() {
         formData.append('photos', compressedPhotos[index] || photo);
       });
 
-      const response = await fetch(backend_url + '/upload_photo_album', {
+      const response = await authenticatedFetch(backend_url + '/upload_photo_album', {
         method: 'POST',
         body: formData,
       });

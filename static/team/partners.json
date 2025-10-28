@@ -7,44 +7,44 @@
   },
   {
     "id": "2",
-    "name": "Environmental Science Center",
-    "description": "Specializing in climate adaptation strategies and community-based water management.",
+    "name": "FES",
+    "description": "",
     "members": []
   },
   {
     "id": "3",
-    "name": "Development Studies Foundation",
-    "description": "Focusing on gender equity in irrigation access and participatory approaches.",
+    "name": "ATREE",
+    "description": "",
     "members": []
   },
   {
     "id": "4",
-    "name": "Technology Innovation Lab",
-    "description": "Developing smart irrigation systems and IoT solutions for precision agriculture.",
+    "name": "IHE Delft",
+    "description": "",
     "members": []
   },
   {
     "id": "5",
-    "name": "Agricultural Economics Research",
-    "description": "Coordinating field studies and community engagement programs.",
+    "name": "Wollo University",
+    "description": "",
     "members": []
   },
   {
     "id": "6",
-    "name": "Data Analytics Institute",
-    "description": "Leading data analysis and modeling efforts for irrigation system effectiveness.",
+    "name": "WoDET",
+    "description": "",
     "members": []
   },
   {
     "id": "7",
-    "name": "Water Resources Center",
-    "description": "Providing strategic guidance and oversight for research initiatives.",
+    "name": "NMAIST",
+    "description": "",
     "members": []
   },
   {
     "id": "8",
-    "name": "International Water Management",
-    "description": "Regional advisory and technical support for water management projects.",
+    "name": "PBWB",
+    "description": "",
     "members": []
   }
 ]

@@ -18,8 +18,6 @@ interface CaseStudy {
   date?: string;
   description: string;
   cover_image?: string;
-  pdf_file?: string;
-  link?: string;
   sections?: Section[];
 }
 

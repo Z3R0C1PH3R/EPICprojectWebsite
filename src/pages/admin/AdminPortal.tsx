@@ -8,7 +8,7 @@ const backend_url = import.meta.env.VITE_BACKEND_URL;
 export default function AdminPortal() {
   const [password, setPassword] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    return localStorage.getItem('isAuthenticated') === 'true';
+    return localStorage.getItem('authToken') !== null;
   });
   const navigate = useNavigate();
 
@@ -22,11 +22,15 @@ export default function AdminPortal() {
         body: formData,
       });
 
+      const data = await response.json();
+
       if (response.status === 202) {
-        localStorage.setItem('isAuthenticated', 'true');
+        localStorage.setItem('authToken', data.token);
         setIsAuthenticated(true);
       } else if (response.status === 401) {
         alert('Invalid password');
+      } else if (response.status === 429) {
+        alert(data.error || 'Too many login attempts. Please try again later.');
       }
     } catch (error) {
       alert('Error logging in, issue: ' + (error as Error).message);
@@ -34,7 +38,7 @@ export default function AdminPortal() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('authToken');
     setIsAuthenticated(false);
   };
 

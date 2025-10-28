@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Plus, Edit, Trash2, ExternalLink } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { authenticatedFetch } from '../../utils/auth';
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
@@ -48,7 +49,7 @@ export default function ResourcesAdmin() {
   const handleDeleteResource = async (resourceNumber: string) => {
     if (window.confirm('Are you sure you want to delete this resource?')) {
       try {
-        const response = await fetch(`${backend_url}/delete_resource/${resourceNumber}`, {
+        const response = await authenticatedFetch(`${backend_url}/delete_resource/${resourceNumber}`, {
           method: 'DELETE',
         });
         if (response.ok) {
@@ -103,7 +104,7 @@ export default function ResourcesAdmin() {
         formData.append('thumbnail', thumbnail);
       }
 
-      const response = await fetch(backend_url + '/upload_resource', {
+      const response = await authenticatedFetch(backend_url + '/upload_resource', {
         method: 'POST',
         body: formData,
       });

@@ -74,6 +74,8 @@ interface CaseStudyLocation {
   description: string;
   color: string;
   pulseColor: string;
+  popupOffset?: [number, number]; // [x, y] offset for popup positioning
+  popupAnchor?: 'top' | 'bottom' | 'left' | 'right'; // Direction of the arrow
 }
 
 // Component to handle map bounds
@@ -86,6 +88,26 @@ function MapBounds({ locations }: { locations: CaseStudyLocation[] }) {
       map.fitBounds(bounds, { padding: [80, 80], maxZoom: 6 });
     }
   }, [locations, map]);
+  
+  return null;
+}
+
+// Component to auto-open all popups
+function AutoOpenPopups() {
+  const map = useMap();
+  
+  useEffect(() => {
+    // Wait for map to be ready and markers to be added
+    const timer = setTimeout(() => {
+      map.eachLayer((layer) => {
+        if (layer instanceof L.Marker) {
+          layer.openPopup();
+        }
+      });
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }, [map]);
   
   return null;
 }
@@ -103,7 +125,8 @@ const CaseStudiesMap = () => {
       lng: 78.15982,
       description: 'Exploring equity in groundwater-based farmer managed irrigation systems in Andhra Pradesh',
       color: '#2563EB',
-      pulseColor: 'rgba(37, 99, 235, 0.3)'
+      pulseColor: 'rgba(37, 99, 235, 0.3)',
+      popupOffset: [0, -55]
     },
     {
       id: 'gaya',
@@ -114,7 +137,8 @@ const CaseStudiesMap = () => {
       lng: 85.0018,
       description: 'Understanding equity implications of traditional and modern irrigation practices in Gaya district',
       color: '#2563EB',
-      pulseColor: 'rgba(37, 99, 235, 0.3)'
+      pulseColor: 'rgba(37, 99, 235, 0.3)',
+      popupOffset: [0, -55]
     },
     {
       id: 'kalyanpura',
@@ -125,7 +149,8 @@ const CaseStudiesMap = () => {
       lng: 75.227060,
       description: 'Examining equity outcomes of watershed development interventions in Rajasthan',
       color: '#2563EB',
-      pulseColor: 'rgba(37, 99, 235, 0.3)'
+      pulseColor: 'rgba(37, 99, 235, 0.3)',
+      popupOffset: [0, -55]
     },
     {
       id: 'gurukunj',
@@ -136,7 +161,8 @@ const CaseStudiesMap = () => {
       lng: 77.36450,
       description: 'Analyzing equity in modern piped irrigation distribution systems',
       color: '#2563EB',
-      pulseColor: 'rgba(37, 99, 235, 0.3)'
+      pulseColor: 'rgba(37, 99, 235, 0.3)',
+      popupOffset: [0, -55]
     },
     {
       id: 'tanzania',
@@ -147,7 +173,8 @@ const CaseStudiesMap = () => {
       lng: 37.198694,
       description: 'Investigating equity in farmer-managed irrigation systems in Tanzania',
       color: '#059669',
-      pulseColor: 'rgba(5, 150, 105, 0.3)'
+      pulseColor: 'rgba(5, 150, 105, 0.3)',
+      popupOffset: [0, -55]
     },
     {
       id: 'melka-chefe',
@@ -158,7 +185,8 @@ const CaseStudiesMap = () => {
       lng: 39.764528,
       description: 'Assessing equity in government-managed irrigation schemes in Ethiopia',
       color: '#DC2626',
-      pulseColor: 'rgba(220, 38, 38, 0.3)'
+      pulseColor: 'rgba(220, 38, 38, 0.3)',
+      popupOffset: [0, -55]
     },
     {
       id: 'kobo-girana',
@@ -169,7 +197,8 @@ const CaseStudiesMap = () => {
       lng: 39.634729,
       description: 'Examining equity dimensions in large-scale irrigation development in Ethiopia',
       color: '#DC2626',
-      pulseColor: 'rgba(220, 38, 38, 0.3)'
+      pulseColor: 'rgba(220, 38, 38, 0.3)',
+      popupOffset: [0, -55]
     }
   ];
 
@@ -184,7 +213,11 @@ const CaseStudiesMap = () => {
           center={[15, 55]}
           zoom={3}
           style={{ height: '650px', width: '100%' }}
-          scrollWheelZoom={true}
+          scrollWheelZoom={false}
+          dragging={false}
+          doubleClickZoom={false}
+          zoomControl={false}
+          touchZoom={false}
           className="z-0 rounded-lg"
         >
           <TileLayer
@@ -193,6 +226,7 @@ const CaseStudiesMap = () => {
           />
           
           <MapBounds locations={locations} />
+          <AutoOpenPopups />
           
           {locations.map((location) => (
             <Marker
@@ -200,39 +234,32 @@ const CaseStudiesMap = () => {
               position={[location.lat, location.lng]}
               icon={createCustomIcon(location.color, location.pulseColor)}
               eventHandlers={{
-                click: () => handleMarkerClick(location.caseStudyNumber),
+                click: (e) => {
+                  e.originalEvent.preventDefault();
+                  e.originalEvent.stopPropagation();
+
+                  const marker = e.target as L.Marker;
+                  marker.openPopup();
+
+                  handleMarkerClick(location.caseStudyNumber);
+                },
               }}
             >
-              <Popup maxWidth={300} className="custom-popup">
-                <div className="p-3">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="inline-block px-3 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full">
-                      Case Study #{location.caseStudyNumber}
-                    </span>
-                  </div>
-                  <h3 className="font-bold text-lg text-gray-900 mb-2 leading-tight">
+              <Popup 
+                maxWidth={300} 
+                className={`custom-popup popup-anchor-${location.popupAnchor || 'bottom'}`}
+                autoClose={false}
+                closeOnClick={false}
+                closeButton={false}
+                offset={location.popupOffset || [0, -55]}
+              >
+                <div 
+                  className="p-3 cursor-pointer"
+                  onClick={() => handleMarkerClick(location.caseStudyNumber)}
+                >
+                  <h3 className="font-bold text-base text-gray-900 leading-tight">
                     {location.title}
                   </h3>
-                  <p className="text-gray-600 text-sm mb-3 leading-relaxed">
-                    {location.description}
-                  </p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-500 flex items-center">
-                      <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                      </svg>
-                      {location.country}
-                    </span>
-                    <button 
-                      onClick={() => handleMarkerClick(location.caseStudyNumber)}
-                      className="text-blue-600 text-sm font-semibold hover:text-blue-800 hover:underline flex items-center"
-                    >
-                      View Details
-                      <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
-                  </div>
                 </div>
               </Popup>
             </Marker>
@@ -268,6 +295,44 @@ const CaseStudiesMap = () => {
         </div>
         <p className="text-xs text-gray-500 mt-4 italic">Click on any marker to view detailed case study information</p>
       </div>
+      
+      {/* CSS for popup arrow directions */}
+      <style>{`
+        /* Bottom arrow (default - points down to marker) */
+        .popup-anchor-bottom .leaflet-popup-tip-container {
+          bottom: 0;
+          margin-bottom: -10px;
+        }
+        .popup-anchor-bottom .leaflet-popup-tip {
+          box-shadow: none;
+        }
+        
+        /* Top arrow (points up) */
+        .popup-anchor-top .leaflet-popup-tip-container {
+          top: 0;
+          bottom: auto;
+          margin-top: -10px;
+          transform: rotate(180deg);
+        }
+        
+        /* Left arrow (points left) */
+        .popup-anchor-left .leaflet-popup-tip-container {
+          left: 0;
+          right: auto;
+          bottom: 50%;
+          margin-left: -10px;
+          transform: translateY(50%) rotate(-90deg);
+        }
+        
+        /* Right arrow (points right) */
+        .popup-anchor-right .leaflet-popup-tip-container {
+          right: 0;
+          left: auto;
+          bottom: 50%;
+          margin-right: -10px;
+          transform: translateY(50%) rotate(90deg);
+        }
+      `}</style>
     </div>
   );
 };

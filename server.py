@@ -1,12 +1,76 @@
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
+from functools import wraps
 import os
 import json
-from datetime import datetime
+import jwt
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
-CORS(app)
+
+# Security Configuration
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key-change-this-in-production')
+app.config['JWT_EXPIRATION_HOURS'] = 24
+
+# CORS Configuration - Only allow your frontend domain
+ALLOWED_ORIGINS = [
+    'http://localhost:5173',  # Vite dev server
+    'https://epic.iitd.ac.in',  # Add your production domain
+]
+CORS(app, origins=ALLOWED_ORIGINS, supports_credentials=True)
+
+ADMIN_PASSWORD = "EPICadmin@123"
+
+# Rate limiting configuration
+login_attempts = {}  # Store IP: [timestamps]
+MAX_LOGIN_ATTEMPTS = 5
+LOCKOUT_DURATION = 300  # 5 minutes in seconds
+
+def check_rate_limit(ip):
+    """Check if IP has exceeded login attempts"""
+    now = datetime.now()
+    if ip in login_attempts:
+        # Remove old attempts outside lockout window
+        login_attempts[ip] = [t for t in login_attempts[ip] if (now - t).seconds < LOCKOUT_DURATION]
+        
+        if len(login_attempts[ip]) >= MAX_LOGIN_ATTEMPTS:
+            return False, "Too many login attempts. Please try again in 5 minutes."
+    return True, None
+
+def record_login_attempt(ip):
+    """Record a failed login attempt"""
+    if ip not in login_attempts:
+        login_attempts[ip] = []
+    login_attempts[ip].append(datetime.now())
+
+def clear_login_attempts(ip):
+    """Clear login attempts after successful login"""
+    if ip in login_attempts:
+        del login_attempts[ip]
+
+# Authentication decorator
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = request.headers.get('Authorization')
+        
+        if not token:
+            return jsonify({'error': 'Token is missing'}), 401
+        
+        if token.startswith('Bearer '):
+            token = token[7:]
+        
+        try:
+            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+            # Token is valid, proceed with the request
+        except jwt.ExpiredSignatureError:
+            return jsonify({'error': 'Token has expired'}), 401
+        except jwt.InvalidTokenError:
+            return jsonify({'error': 'Invalid token'}), 401
+        
+        return f(*args, **kwargs)
+    return decorated
 
 # Upload Folders Configuration
 CASE_STUDIES_UPLOAD_FOLDER = 'static/case_studies'
@@ -45,50 +109,50 @@ if not os.path.exists(TEAM_DIR_FILE):
     default_partners = [
         {
             "id": "1",
-            "name": "Agricultural Engineering Institute",
-            "description": "Leading research in sustainable irrigation systems and water resource management.",
+            "name": "IIT Delhi",
+            "description": "",
             "members": []
         },
         {
             "id": "2",
-            "name": "Environmental Science Center",
-            "description": "Specializing in climate adaptation strategies and community-based water management.",
+            "name": "FES",
+            "description": "",
             "members": []
         },
         {
             "id": "3",
-            "name": "Development Studies Foundation",
-            "description": "Focusing on gender equity in irrigation access and participatory approaches.",
+            "name": "ATREE",
+            "description": "",
             "members": []
         },
         {
             "id": "4",
-            "name": "Technology Innovation Lab",
-            "description": "Developing smart irrigation systems and IoT solutions for precision agriculture.",
+            "name": "IHE Delft",
+            "description": "",
             "members": []
         },
         {
             "id": "5",
-            "name": "Agricultural Economics Research",
-            "description": "Coordinating field studies and community engagement programs.",
+            "name": "Wollo University",
+            "description": "",
             "members": []
         },
         {
             "id": "6",
-            "name": "Data Analytics Institute",
-            "description": "Leading data analysis and modeling efforts for irrigation system effectiveness.",
+            "name": "WoDET",
+            "description": "",
             "members": []
         },
         {
             "id": "7",
-            "name": "Water Resources Center",
-            "description": "Providing strategic guidance and oversight for research initiatives.",
+            "name": "NMAIST",
+            "description": "",
             "members": []
         },
         {
             "id": "8",
-            "name": "International Water Management",
-            "description": "Regional advisory and technical support for water management projects.",
+            "name": "PBWB",
+            "description": "",
             "members": []
         }
     ]
@@ -119,6 +183,7 @@ def update_directory(dir_file, key, item_data, item_number_key):
         json.dump(directory, f, indent=2)
 
 @app.route("/upload_case_study", methods=["POST"])
+@token_required
 def upload_case_study():
     try:
         if not all(field in request.form for field in ['title']):
@@ -151,18 +216,6 @@ def upload_case_study():
                 cover_image_path = f"/static/case_studies/{filename}"
         elif is_edit and 'existing_cover_image' in request.form:
             cover_image_path = request.form.get('existing_cover_image')
-
-        # Handle PDF - preserve existing if no new upload
-        pdf_path = None
-        if 'pdf_file' in request.files and request.files['pdf_file'].filename:
-            file = request.files['pdf_file']
-            if file and allowed_file(file.filename):
-                filename = secure_filename(f"case_study_{case_study_number}.pdf")
-                filepath = os.path.join(CASE_STUDIES_UPLOAD_FOLDER, filename)
-                file.save(filepath)
-                pdf_path = f"/static/case_studies/{filename}"
-        elif is_edit and 'existing_pdf_file' in request.form:
-            pdf_path = request.form.get('existing_pdf_file')
 
         # Process sections
         sections = []
@@ -197,7 +250,6 @@ def upload_case_study():
             'category': category,
             'upload_date': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             'cover_image': cover_image_path,
-            'pdf_file': pdf_path,
             'description': request.form.get('description', ''),
             'sections': sections
         }
@@ -210,6 +262,7 @@ def upload_case_study():
         return jsonify({"error": str(e)}), 500
 
 @app.route("/upload_resource", methods=["POST"])
+@token_required
 def upload_resource():
     try:
         # Handle JSON request
@@ -303,6 +356,7 @@ def upload_resource():
         return jsonify({"error": str(e)}), 500
 
 @app.route("/upload_photo_album", methods=["POST"])
+@token_required
 def upload_photo_album():
     try:
         if not all(field in request.form for field in ['title']):
@@ -402,13 +456,37 @@ def get_photo_albums():
 
 @app.route("/handle_login", methods=["POST"])
 def handle_login():
+    client_ip = request.remote_addr
+    
+    # Check rate limit
+    allowed, error_msg = check_rate_limit(client_ip)
+    if not allowed:
+        return jsonify({"error": error_msg}), 429
+    
     password = request.form.get('password')
-    if password == 'epicadmin':
-        return jsonify({"message": "Login successful"}), 202
+    
+    if password == ADMIN_PASSWORD:
+        # Clear failed attempts on successful login
+        clear_login_attempts(client_ip)
+        
+        # Generate JWT token
+        token = jwt.encode({
+            'exp': datetime.utcnow() + timedelta(hours=app.config['JWT_EXPIRATION_HOURS']),
+            'iat': datetime.utcnow(),
+            'admin': True
+        }, app.config['SECRET_KEY'], algorithm='HS256')
+        
+        return jsonify({
+            "message": "Login successful",
+            "token": token
+        }), 202
     else:
+        # Record failed attempt
+        record_login_attempt(client_ip)
         return jsonify({"error": "Invalid password"}), 401
 
 @app.route("/delete_case_study/<case_study_number>", methods=["DELETE"])
+@token_required
 def delete_case_study(case_study_number):
     try:
         with open(CASE_STUDIES_DIR_FILE, 'r') as f:
@@ -421,6 +499,7 @@ def delete_case_study(case_study_number):
         return jsonify({"error": str(e)}), 500
 
 @app.route("/delete_resource/<resource_number>", methods=["DELETE"])
+@token_required
 def delete_resource(resource_number):
     try:
         with open(RESOURCES_DIR_FILE, 'r') as f:
@@ -433,6 +512,7 @@ def delete_resource(resource_number):
         return jsonify({"error": str(e)}), 500
 
 @app.route("/delete_photo_album/<album_number>", methods=["DELETE"])
+@token_required
 def delete_photo_album(album_number):
     try:
         with open(GALLERY_DIR_FILE, 'r') as f:
@@ -455,6 +535,7 @@ def get_partners():
         return jsonify({"error": str(e)}), 500
 
 @app.route("/update_partner", methods=["POST"])
+@token_required
 def update_partner():
     try:
         partner_id = request.form.get('partner_id')
@@ -478,6 +559,7 @@ def update_partner():
         return jsonify({"error": str(e)}), 500
 
 @app.route("/add_team_member", methods=["POST"])
+@token_required
 def add_team_member():
     try:
         import uuid
@@ -533,6 +615,7 @@ def add_team_member():
         return jsonify({"error": str(e)}), 500
 
 @app.route("/update_team_member", methods=["POST"])
+@token_required
 def update_team_member():
     try:
         partner_id = request.form.get('partner_id')
@@ -585,6 +668,7 @@ def update_team_member():
         return jsonify({"error": str(e)}), 500
 
 @app.route("/delete_team_member", methods=["POST"])
+@token_required
 def delete_team_member():
     try:
         partner_id = request.form.get('partner_id')

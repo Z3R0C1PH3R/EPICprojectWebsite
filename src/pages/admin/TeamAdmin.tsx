@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, Edit, Trash2, Save, X, Users, Building } from 'lucide-react';
+import { authenticatedFetch } from '../../utils/auth';
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
@@ -140,7 +141,7 @@ const TeamAdmin = () => {
       formData.append('name', partner.name);
       formData.append('description', partner.description);
 
-      const response = await fetch(`${backend_url}/update_partner`, {
+      const response = await authenticatedFetch(`${backend_url}/update_partner`, {
         method: 'POST',
         body: formData,
       });
@@ -186,7 +187,7 @@ const TeamAdmin = () => {
         formData.append('photo', editPhotoFile);
       }
 
-      const response = await fetch(`${backend_url}/update_team_member`, {
+      const response = await authenticatedFetch(`${backend_url}/update_team_member`, {
         method: 'POST',
         body: formData,
       });
@@ -224,7 +225,7 @@ const TeamAdmin = () => {
         formData.append('photo', photoFile);
       }
 
-      const response = await fetch(`${backend_url}/add_team_member`, {
+      const response = await authenticatedFetch(`${backend_url}/add_team_member`, {
         method: 'POST',
         body: formData,
       });
@@ -252,7 +253,7 @@ const TeamAdmin = () => {
       formData.append('partner_id', partnerId);
       formData.append('member_id', memberId);
 
-      const response = await fetch(`${backend_url}/delete_team_member`, {
+      const response = await authenticatedFetch(`${backend_url}/delete_team_member`, {
         method: 'POST',
         body: formData,
       });

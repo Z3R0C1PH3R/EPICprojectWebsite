@@ -25,6 +25,18 @@ interface Partner {
   members: TeamMember[];
 }
 
+// Partner locations mapping
+const partnerLocations: { [key: string]: string } = {
+  '1': 'New Delhi, India',
+  '2': 'Bhilwara, Rajasthan',
+  '3': 'Bangalore',
+  '4': 'Delft',
+  '5': 'Dessie, Ethiopia',
+  '6': 'Dessie, Ethiopia',
+  '7': 'Arusha, Tanzania',
+  '8': 'Moshi, Tanzania'
+};
+
 const Team = () => {
   const [partners, setPartners] = useState<Partner[]>([]);
   const [loading, setLoading] = useState(true);
@@ -109,12 +121,21 @@ const Team = () => {
           ) : (
             <div className="space-y-12">
               {partners.map((partner) => (
-                <div key={partner.id} className="bg-white border border-gray-200 rounded-lg p-8 shadow-sm">
+                <div 
+                  key={partner.id} 
+                  id={`partner-${partner.id}`}
+                  className="bg-white border border-gray-200 rounded-lg p-8 shadow-sm"
+                >
                   <div className="flex items-center mb-6">
                     <Building className="h-8 w-8 text-blue-600 mr-3" />
                     <div>
                       <h3 className="text-2xl font-bold text-gray-900">{partner.name}</h3>
-                      <p className="text-gray-600">{partner.description}</p>
+                      {partnerLocations[partner.id] && (
+                        <p className="text-gray-600 text-base mt-1">{partnerLocations[partner.id]}</p>
+                      )}
+                      {partner.description && (
+                        <p className="text-gray-600 text-sm mt-1">{partner.description}</p>
+                      )}
                     </div>
                   </div>
 
