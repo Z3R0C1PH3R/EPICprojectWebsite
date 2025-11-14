@@ -172,31 +172,6 @@ export default function CaseStudyDetail() {
                 ))}
               </div>
             )}
-
-            {/* Study Details */}
-            <div className="bg-white border border-gray-200 rounded-lg p-6 mb-12">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Study Information</h3>
-              <div className="space-y-3">
-                {caseStudy.category && (
-                  <div>
-                    <span className="text-sm font-medium text-gray-500">Category:</span>
-                    <p className="text-gray-900">{caseStudy.category}</p>
-                  </div>
-                )}
-                {caseStudy.date && (
-                  <div>
-                    <span className="text-sm font-medium text-gray-500">Study Date:</span>
-                    <p className="text-gray-900">{caseStudy.date}</p>
-                  </div>
-                )}
-                {caseStudy.location && (
-                  <div>
-                    <span className="text-sm font-medium text-gray-500">Location:</span>
-                    <p className="text-gray-900">{caseStudy.location}</p>
-                  </div>
-                )}
-              </div>
-            </div>
           </motion.div>
         </div>
       </section>
