@@ -19,44 +19,17 @@ const DefaultIcon = L.icon({
 
 L.Marker.prototype.options.icon = DefaultIcon;
 
-// Custom marker icon with gradient and animation
-const createCustomIcon = (color: string, pulseColor: string) => {
+// Custom marker icon
+const createCustomIcon = (color: string) => {
   return L.divIcon({
     className: 'custom-marker',
     html: `
       <div style="position: relative;">
-        <div class="marker-pulse" style="
-          position: absolute;
-          width: 50px;
-          height: 50px;
-          border-radius: 50%;
-          background: ${pulseColor};
-          opacity: 0.6;
-          top: 5px;
-          left: -5px;
-          animation: pulse 2s infinite;
-        "></div>
-        <svg width="45" height="55" viewBox="0 0 24 24" fill="${color}" stroke="white" stroke-width="2" style="position: relative; z-index: 10; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));">
+        <svg width="45" height="55" viewBox="0 0 24 24" fill="${color}" stroke="white" stroke-width="2" style="filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));">
           <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
           <circle cx="12" cy="10" r="3" fill="white"></circle>
         </svg>
       </div>
-      <style>
-        @keyframes pulse {
-          0% {
-            transform: scale(0.8);
-            opacity: 0.6;
-          }
-          50% {
-            transform: scale(1);
-            opacity: 0.4;
-          }
-          100% {
-            transform: scale(0.8);
-            opacity: 0.6;
-          }
-        }
-      </style>
     `,
     iconSize: [45, 55],
     iconAnchor: [22.5, 55],
@@ -126,7 +99,8 @@ const CaseStudiesMap = () => {
       description: 'Exploring equity in groundwater-based farmer managed irrigation systems in Andhra Pradesh',
       color: '#2563EB',
       pulseColor: 'rgba(37, 99, 235, 0.3)',
-      popupOffset: [0, -55]
+      popupOffset: [0, 180],
+      popupAnchor: 'top'
     },
     {
       id: 'gaya',
@@ -138,7 +112,8 @@ const CaseStudiesMap = () => {
       description: 'Understanding equity implications of traditional and modern irrigation practices in Gaya district',
       color: '#2563EB',
       pulseColor: 'rgba(37, 99, 235, 0.3)',
-      popupOffset: [0, -55]
+      popupOffset: [140, 110],
+      popupAnchor: 'left'
     },
     {
       id: 'kalyanpura',
@@ -150,7 +125,8 @@ const CaseStudiesMap = () => {
       description: 'Examining equity outcomes of watershed development interventions in Rajasthan',
       color: '#2563EB',
       pulseColor: 'rgba(37, 99, 235, 0.3)',
-      popupOffset: [0, -55]
+      popupOffset: [0, 15],
+      popupAnchor: 'bottom'
     },
     {
       id: 'gurukunj',
@@ -162,7 +138,8 @@ const CaseStudiesMap = () => {
       description: 'Analyzing equity in modern piped irrigation distribution systems',
       color: '#2563EB',
       pulseColor: 'rgba(37, 99, 235, 0.3)',
-      popupOffset: [0, -55]
+      popupOffset: [-140, 120],
+      popupAnchor: 'right'
     },
     {
       id: 'tanzania',
@@ -174,7 +151,8 @@ const CaseStudiesMap = () => {
       description: 'Investigating equity in farmer-managed irrigation systems in Tanzania',
       color: '#059669',
       pulseColor: 'rgba(5, 150, 105, 0.3)',
-      popupOffset: [0, -55]
+      popupOffset: [0, 180],
+      popupAnchor: 'top'
     },
     {
       id: 'melka-chefe',
@@ -186,7 +164,8 @@ const CaseStudiesMap = () => {
       description: 'Assessing equity in government-managed irrigation schemes in Ethiopia',
       color: '#DC2626',
       pulseColor: 'rgba(220, 38, 38, 0.3)',
-      popupOffset: [0, -55]
+      popupOffset: [0, 150],
+      popupAnchor: 'top'
     },
     {
       id: 'kobo-girana',
@@ -198,7 +177,8 @@ const CaseStudiesMap = () => {
       description: 'Examining equity dimensions in large-scale irrigation development in Ethiopia',
       color: '#DC2626',
       pulseColor: 'rgba(220, 38, 38, 0.3)',
-      popupOffset: [0, -55]
+      popupOffset: [0, 15],
+      popupAnchor: 'bottom'
     }
   ];
 
@@ -232,7 +212,7 @@ const CaseStudiesMap = () => {
             <Marker
               key={location.id}
               position={[location.lat, location.lng]}
-              icon={createCustomIcon(location.color, location.pulseColor)}
+              icon={createCustomIcon(location.color)}
               eventHandlers={{
                 click: (e) => {
                   e.originalEvent.preventDefault();
@@ -246,7 +226,7 @@ const CaseStudiesMap = () => {
               }}
             >
               <Popup 
-                maxWidth={300} 
+                maxWidth={250} 
                 className={`custom-popup popup-anchor-${location.popupAnchor || 'bottom'}`}
                 autoClose={false}
                 closeOnClick={false}
@@ -254,10 +234,10 @@ const CaseStudiesMap = () => {
                 offset={location.popupOffset || [0, -55]}
               >
                 <div 
-                  className="p-3 cursor-pointer"
+                  className="p-2 cursor-pointer"
                   onClick={() => handleMarkerClick(location.caseStudyNumber)}
                 >
-                  <h3 className="font-bold text-base text-gray-900 leading-tight">
+                  <h3 className="font-bold text-xs text-gray-900 leading-tight">
                     {location.title}
                   </h3>
                 </div>
@@ -298,10 +278,21 @@ const CaseStudiesMap = () => {
       
       {/* CSS for popup arrow directions */}
       <style>{`
+        /* Make popups compact with max width */
+        .custom-popup .leaflet-popup-content-wrapper {
+          padding: 4px 6px;
+          border-radius: 6px;
+          max-width: 250px !important;
+        }
+        .custom-popup .leaflet-popup-content {
+          margin: 0 !important;
+          max-width: 250px !important;
+        }
+        
         /* Bottom arrow (default - points down to marker) */
         .popup-anchor-bottom .leaflet-popup-tip-container {
           bottom: 0;
-          margin-bottom: -10px;
+          margin-bottom: -20px;
         }
         .popup-anchor-bottom .leaflet-popup-tip {
           box-shadow: none;
@@ -311,7 +302,7 @@ const CaseStudiesMap = () => {
         .popup-anchor-top .leaflet-popup-tip-container {
           top: 0;
           bottom: auto;
-          margin-top: -10px;
+          margin-top: -20px;
           transform: rotate(180deg);
         }
         
@@ -320,8 +311,8 @@ const CaseStudiesMap = () => {
           left: 0;
           right: auto;
           bottom: 50%;
-          margin-left: -10px;
-          transform: translateY(50%) rotate(-90deg);
+          margin-left: -30px;
+          transform: translateY(50%) rotate(+90deg);
         }
         
         /* Right arrow (points right) */
@@ -329,8 +320,8 @@ const CaseStudiesMap = () => {
           right: 0;
           left: auto;
           bottom: 50%;
-          margin-right: -10px;
-          transform: translateY(50%) rotate(90deg);
+          margin-right: -30px;
+          transform: translateY(50%) rotate(-90deg);
         }
       `}</style>
     </div>

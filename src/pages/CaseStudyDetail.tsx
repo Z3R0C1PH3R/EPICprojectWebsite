@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Calendar, MapPin } from 'lucide-react';
+import { ArrowLeft, MapPin } from 'lucide-react';
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
@@ -103,12 +103,6 @@ export default function CaseStudyDetail() {
                 <div className="flex items-center">
                   <MapPin className="h-5 w-5 mr-2" />
                   <span>{caseStudy.location}</span>
-                </div>
-              )}
-              {caseStudy.date && (
-                <div className="flex items-center">
-                  <Calendar className="h-5 w-5 mr-2" />
-                  <span>{caseStudy.date}</span>
                 </div>
               )}
               {caseStudy.category && (

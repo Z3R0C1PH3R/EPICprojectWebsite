@@ -96,7 +96,7 @@ const PartnersMap = ({ onPartnerClick }: PartnersMapProps) => {
       lat: 28.5450,
       lng: 77.1920,
       color: '#2563EB', // Blue for India
-      popupOffset: [0, 10], // Adjust these values: [horizontal, vertical]
+      popupOffset: [0, 15], // Adjust these values: [horizontal, vertical]
       popupAnchor: 'bottom'
     },
     {
@@ -107,8 +107,8 @@ const PartnersMap = ({ onPartnerClick }: PartnersMapProps) => {
       lat: 25.3470,
       lng: 74.6409,
       color: '#2563EB', // Blue for India
-      popupOffset: [160, 80],
-      popupAnchor: 'left'
+      popupOffset: [-40, 90],
+      popupAnchor: 'right'
     },
     {
       id: '3',
@@ -118,7 +118,7 @@ const PartnersMap = ({ onPartnerClick }: PartnersMapProps) => {
       lat: 12.9716,
       lng: 77.5946,
       color: '#2563EB', // Blue for India
-      popupOffset: [0, 140],
+      popupOffset: [0, 120],
       popupAnchor: 'top'
     },
     {
@@ -129,7 +129,7 @@ const PartnersMap = ({ onPartnerClick }: PartnersMapProps) => {
       lat: 52.0116,
       lng: 4.3571,
       color: '#7C3AED', // Purple for Netherlands
-      popupOffset: [0, 140],
+      popupOffset: [0, 120],
       popupAnchor: 'top'
     },
     {
@@ -140,7 +140,7 @@ const PartnersMap = ({ onPartnerClick }: PartnersMapProps) => {
       lat: 11.1300,
       lng: 39.6333,
       color: '#DC2626', // Red for Ethiopia
-      popupOffset: [-160, 80],
+      popupOffset: [-100, 80],
       popupAnchor: 'right'
     },
     {
@@ -162,7 +162,7 @@ const PartnersMap = ({ onPartnerClick }: PartnersMapProps) => {
       lat: -3.3869,
       lng: 36.6830,
       color: '#059669', // Green for Tanzania
-      popupOffset: [-160, 80],
+      popupOffset: [-60, 80],
       popupAnchor: 'right'
     },
     {
@@ -173,7 +173,7 @@ const PartnersMap = ({ onPartnerClick }: PartnersMapProps) => {
       lat: -3.3500,
       lng: 37.3500,
       color: '#059669', // Green for Tanzania
-      popupOffset: [0, 140],
+      popupOffset: [0, 120],
       popupAnchor: 'top'
     }
   ];
@@ -237,10 +237,11 @@ const PartnersMap = ({ onPartnerClick }: PartnersMapProps) => {
                 offset={partner.popupOffset || [0, -55]}
               >
                 <div 
-                  className="text-center p-2 cursor-pointer"
+                  className="text-center p-1 cursor-pointer"
                   onClick={() => handleMarkerClick(partner.id)}
+                  style={{ minWidth: 'auto', whiteSpace: 'nowrap' }}
                 >
-                  <h3 className="font-bold text-base text-gray-900">{partner.name}</h3>
+                  <h3 className="font-bold text-xs text-gray-900">{partner.name}</h3>
                 </div>
               </Popup>
             </Marker>
@@ -270,6 +271,25 @@ const PartnersMap = ({ onPartnerClick }: PartnersMapProps) => {
       
       {/* CSS for popup arrow directions */}
       <style>{`
+        /* Make popups compact and fit content */
+        .custom-label-popup .leaflet-popup-content-wrapper {
+          padding: 2px 4px;
+          border-radius: 6px;
+          width: fit-content !important;
+          min-width: auto !important;
+          max-width: none !important;
+        }
+        .custom-label-popup .leaflet-popup-content {
+          margin: 0 !important;
+          width: auto !important;
+          min-width: auto !important;
+          max-width: none !important;
+        }
+        /* Override Leaflet's inline styles with attribute selector */
+        .custom-label-popup .leaflet-popup-content[style*="width"] {
+          width: auto !important;
+        }
+        
         /* Bottom arrow (default - points down to marker) */
         .popup-anchor-bottom .leaflet-popup-tip-container {
           bottom: 0;

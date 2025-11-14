@@ -96,9 +96,8 @@ const Team = () => {
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Partners</h2>
             <p className="text-lg text-gray-600 mb-8">
-              Led by IIT Delhi, the EPIC project team comprises the following partners
+              Led by IIT Delhi, the EPIC project consortium includes the following organizations
             </p>
           </div>
 
@@ -143,16 +142,16 @@ const Team = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {partner.members.map((member) => (
                         <div key={member.id} className="bg-gray-50 border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
-                          {/* Member Image */}
-                          <div className="h-48 bg-gray-200 flex items-center justify-center overflow-hidden">
+                          {/* Member Image - 4:3 Portrait Aspect Ratio */}
+                          <div className="relative w-full bg-gray-200 flex items-center justify-center overflow-hidden" style={{ paddingTop: '133.33%' }}>
                             {member.image ? (
                               <img 
-                                src={member.image} 
+                                src={`${backend_url}${member.image}`} 
                                 alt={member.name}
-                                className="w-full h-full object-cover"
+                                className="absolute top-0 left-0 w-full h-full object-cover"
                               />
                             ) : (
-                              <span className="text-gray-500">No Photo</span>
+                              <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-gray-500">No Photo</span>
                             )}
                           </div>
                           

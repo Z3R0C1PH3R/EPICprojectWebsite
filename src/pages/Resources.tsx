@@ -35,6 +35,20 @@ const Resources = () => {
     setFilteredResources(filtered);
   }, [resources, selectedType, searchQuery]);
 
+  // Group resources by type
+  const groupedResources = filteredResources.reduce((acc, resource) => {
+    const type = resource.type || 'Others';
+    if (!acc[type]) {
+      acc[type] = [];
+    }
+    acc[type].push(resource);
+    return acc;
+  }, {} as Record<string, Resource[]>);
+
+  // Sort the types in a specific order
+  const typeOrder = ['Journal Articles', 'Conference Papers', 'Masters Thesis', 'Blog Posts', 'Others'];
+  const sortedTypes = typeOrder.filter(type => groupedResources[type] && groupedResources[type].length > 0);
+
   useEffect(() => {
     const fetchResources = async () => {
       try {
@@ -133,66 +147,72 @@ const Resources = () => {
               <p className="text-gray-500 text-lg">No resources found matching your criteria.</p>
             </div>
           ) : (
-            <div className="space-y-6">
-              {filteredResources.map((resource, index) => (
-                <a
-                  key={index}
-                  href={resource.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg hover:border-blue-300 transition-all group"
-                >
-                  <div className="flex items-start">
-                    {/* Thumbnail */}
-                    {resource.thumbnail && (
-                      <div className="flex-shrink-0 w-48 h-48">
-                        <img
-                          src={`${backend_url}${resource.thumbnail}`}
-                          alt={resource.title}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    )}
-                    
-                    {/* Content */}
-                    <div className="flex-1 p-6">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-start gap-4 mb-3">
-                            <div className="flex-shrink-0 mt-1">
-                              {resource.type === 'Journal Articles' ? (
-                                <FileText className="h-6 w-6 text-blue-600" />
-                              ) : resource.type === 'Conference Papers' ? (
-                                <BookOpen className="h-6 w-6 text-green-600" />
-                              ) : resource.type === 'Masters Thesis' ? (
-                                <FileText className="h-6 w-6 text-purple-600" />
-                              ) : resource.type === 'Blog Posts' ? (
-                                <Video className="h-6 w-6 text-orange-600" />
-                              ) : (
-                                <BookOpen className="h-6 w-6 text-gray-600" />
-                              )}
+            <div className="space-y-12">
+              {sortedTypes.map((type) => (
+                <div key={type}>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-6 border-b-2 border-blue-600 pb-2">
+                    {type}
+                  </h2>
+                  <div className="space-y-6">
+                    {groupedResources[type].map((resource, index) => (
+                      <a
+                        key={index}
+                        href={resource.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg hover:border-blue-300 transition-all group"
+                      >
+                        <div className="flex items-start">
+                          {/* Thumbnail */}
+                          {resource.thumbnail && (
+                            <div className="flex-shrink-0 w-48 h-48">
+                              <img
+                                src={`${backend_url}${resource.thumbnail}`}
+                                alt={resource.title}
+                                className="w-full h-full object-cover"
+                              />
                             </div>
-                            <div className="flex-1">
-                              <div className="flex items-start justify-between gap-4">
-                                <h3 className="text-xl font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
-                                  {resource.title}
-                                </h3>
-                                <ExternalLink className="h-5 w-5 text-gray-400 group-hover:text-blue-600 flex-shrink-0 transition-colors" />
+                          )}
+                          
+                          {/* Content */}
+                          <div className="flex-1 p-6">
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <div className="flex items-start gap-4 mb-3">
+                                  <div className="flex-shrink-0 mt-1">
+                                    {resource.type === 'Journal Articles' ? (
+                                      <FileText className="h-6 w-6 text-blue-600" />
+                                    ) : resource.type === 'Conference Papers' ? (
+                                      <BookOpen className="h-6 w-6 text-green-600" />
+                                    ) : resource.type === 'Masters Thesis' ? (
+                                      <FileText className="h-6 w-6 text-purple-600" />
+                                    ) : resource.type === 'Blog Posts' ? (
+                                      <Video className="h-6 w-6 text-orange-600" />
+                                    ) : (
+                                      <BookOpen className="h-6 w-6 text-gray-600" />
+                                    )}
+                                  </div>
+                                  <div className="flex-1">
+                                    <div className="flex items-start justify-between gap-4">
+                                      <h3 className="text-xl font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                        {resource.title}
+                                      </h3>
+                                      <ExternalLink className="h-5 w-5 text-gray-400 group-hover:text-blue-600 flex-shrink-0 transition-colors" />
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                {resource.description && (
+                                  <p className="text-gray-600 leading-relaxed ml-10">{resource.description}</p>
+                                )}
                               </div>
-                              <span className="inline-block text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full mt-2">
-                                {resource.type}
-                              </span>
                             </div>
                           </div>
-                          
-                          {resource.description && (
-                            <p className="text-gray-600 leading-relaxed ml-10">{resource.description}</p>
-                          )}
                         </div>
-                      </div>
-                    </div>
+                      </a>
+                    ))}
                   </div>
-                </a>
+                </div>
               ))}
             </div>
           )}
