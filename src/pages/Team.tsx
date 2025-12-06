@@ -28,9 +28,9 @@ interface Partner {
 // Partner locations mapping
 const partnerLocations: { [key: string]: string } = {
   '1': 'New Delhi, India',
-  '2': 'Bhilwara, Rajasthan',
-  '3': 'Bangalore',
-  '4': 'Delft',
+  '2': 'Bhilwara, Rajasthan, India',
+  '3': 'Bangalore, India',
+  '4': 'Delft, Netherlands',
   '5': 'Dessie, Ethiopia',
   '6': 'Dessie, Ethiopia',
   '7': 'Arusha, Tanzania',
@@ -93,7 +93,7 @@ const Team = () => {
       </section>
 
       {/* Our Partners */}
-      <section className="py-16">
+      <section className="pt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <p className="text-lg text-gray-600 mb-8">
@@ -102,7 +102,7 @@ const Team = () => {
           </div>
 
           {/* Interactive Map */}
-          <div className="mb-16">
+          <div className="">
             <PartnersMap />
           </div>
         </div>
@@ -139,7 +139,7 @@ const Team = () => {
                   </div>
 
                   {partner.members.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                       {partner.members.map((member) => (
                         <div key={member.id} className="bg-gray-50 border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
                           {/* Member Image - 4:3 Portrait Aspect Ratio */}
