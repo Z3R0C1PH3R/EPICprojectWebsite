@@ -28,7 +28,7 @@ const Footer = () => {
               <p className="mb-1">Prof. Pooja Prasad</p>
               <p className="mb-1">School of Public Policy, IIT Delhi</p>
               <p className="mb-1">Hauz Khas, New Delhi 110016</p>
-              <p>Email: <a href="mailto:p_pooja@iitd.ac.in" className="hover:text-white underline">p_pooja@iitd.ac.in</a></p>
+              <p>Email: p_pooja [at] iitd...</p>
             </div>
           </div>
         </div>

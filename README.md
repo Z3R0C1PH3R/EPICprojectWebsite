@@ -66,4 +66,5 @@ For more detailed information, please refer to the following guides:
 
 - [Deployment Guide](DEPLOYMENT.md): Instructions for deploying to production.
 - [User Guide](GUIDE.md): Instructions for making content and code changes.
+- [Backup & Restore Guide](BACKUP.md): Instructions for backing up and restoring data, including PythonAnywhere deployment.
 
