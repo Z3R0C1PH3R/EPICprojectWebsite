@@ -103,6 +103,25 @@ On PythonAnywhere (`/home/EPICIITD/`):
 
 ---
 
+## 🔧 Changing the Admin Password
+
+The admin password is stored in `server.py` on PythonAnywhere. **It is NOT in the GitHub repo for security reasons.**
+
+### To view or change the password:
+
+1. Go to: https://www.pythonanywhere.com/user/EPICIITD/files/home/EPICIITD/server.py
+2. Find this line near the top (around line 23):
+   ```python
+   ADMIN_PASSWORD = "<THE PASSWORD>"
+   ```
+3. Change the password inside the quotes to whatever you want
+4. Click **Save**
+5. Go to https://www.pythonanywhere.com/user/EPICIITD/webapps/ and click **Reload**
+
+⚠️ **Note**: The GitHub repository has `ADMIN_PASSWORD = "REDACTED_FOR_SECURITY"` as a placeholder. The actual password only exists on the PythonAnywhere server.
+
+---
+
 ## ⚠️ Important Notes
 
 1. **Always backup before major changes** - Use the backup guide

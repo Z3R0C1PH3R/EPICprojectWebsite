@@ -20,7 +20,7 @@ ALLOWED_ORIGINS = [
 ]
 CORS(app, origins=ALLOWED_ORIGINS, supports_credentials=True)
 
-ADMIN_PASSWORD = "EPICadmin@123"
+ADMIN_PASSWORD = "REDACTED_FOR_SECURITY"  # Replace with secure method in production
 
 # Rate limiting configuration
 login_attempts = {}  # Store IP: [timestamps]
